@@ -3,72 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanny Script Hub - All-in-One</title>
+    <title>Tanny Script Hub - Ultimate Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --primary: #a78bfa; --text-main: #fff; --text-muted: #d1d5db;
-            --danger: #ef4444; --success: #10b981;
+            --primary: #a78bfa; 
+            --text-main: #fff; 
+            --text-muted: #d1d5db;
+            --danger: #ef4444; 
+            --success: #10b981;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
         
-        /* พื้นหลังเคลื่อนไหว */
-        body { color: var(--text-main); min-height: 100vh; background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b2e); background-size: 400% 400%; animation: gradientBG 15s ease infinite; overflow-x: hidden; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        body { 
+            color: var(--text-main); min-height: 100vh; 
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b2e); 
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite; 
+            overflow-x: hidden; 
+        }
+        @keyframes gradientBG { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
 
         /* Navbar */
-        nav { background: rgba(255, 255, 255, 0.03); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
+        nav { 
+            background: rgba(255, 255, 255, 0.03); padding: 15px 20px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; 
+            z-index: 100; backdrop-filter: blur(15px); 
+        }
         .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; white-space: nowrap; }
         .nav-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end; }
         
-        /* ปุ่มกด */
-        .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: 0.2s; }
+        /* ปุ่ม */
+        .btn { 
+            padding: 8px 16px; border-radius: 8px; border: 1px solid var(--glass-border); 
+            cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: 0.2s; 
+        }
+        .btn:active { transform: scale(0.95); }
         .btn-primary { background: rgba(139, 92, 246, 0.3); color: white; }
+        .btn-primary:hover { background: rgba(139, 92, 246, 0.6); }
         .btn-danger { background: rgba(239, 68, 68, 0.3); color: white; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.6); }
         .btn-success { background: rgba(16, 185, 129, 0.3); color: white; }
+        .btn-success:hover { background: rgba(16, 185, 129, 0.6); }
 
-        /* โครงสร้างหน้า */
+        /* Layout */
         .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
         .view.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .hero { text-align: center; padding: 40px 20px; }
+        .hero h1 { font-size: 36px; margin-bottom: 10px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card, .glass-box { background: var(--glass-bg); backdrop-filter: blur(12px); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
+        
+        /* กล่องกระจก */
+        .card, .glass-box { 
+            background: var(--glass-bg); backdrop-filter: blur(12px); padding: 20px; 
+            border-radius: 16px; border: 1px solid var(--glass-border); 
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); 
+        }
         .auth-box { max-width: 400px; margin: 50px auto; text-align: center; }
         
-        /* ช่องกรอกข้อมูล */
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); color: white; font-family: 'Kanit'; }
-        input:focus { outline: none; border-color: var(--primary); }
+        /* ฟอร์ม */
+        input { 
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; 
+            border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); 
+            color: white; font-family: 'Kanit'; transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--primary); background: rgba(0,0,0,0.4); }
 
         /* หลังบ้าน */
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; transition: 0.3s; }
+        .tab-btn { 
+            padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; 
+            color: white; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; transition: 0.3s; 
+        }
         .tab-btn.active { background: var(--primary); color: black; font-weight: bold; }
         .admin-section { display: none; }
         .admin-section.active { display: block; animation: fadeIn 0.4s ease; }
-        .admin-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); margin-bottom: 10px; }
+        .admin-item { 
+            background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border: 1px solid var(--glass-border); margin-bottom: 10px; 
+        }
 
         /* เครื่องเล่นเพลง */
-        #music-player { position: fixed; bottom: 20px; left: 20px; z-index: 999; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 10px 15px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        #music-player { 
+            position: fixed; bottom: 20px; left: 20px; z-index: 999; 
+            background: var(--glass-bg); backdrop-filter: blur(12px); 
+            border: 1px solid var(--glass-border); border-radius: 50px; 
+            padding: 10px 15px; display: none; align-items: center; gap: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+        }
         #music-player iframe { width: 0; height: 0; border: none; display: none; }
-        .music-btn { background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; color: black; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .music-btn { 
+            background: var(--primary); border: none; width: 40px; height: 40px; 
+            border-radius: 50%; color: black; font-size: 18px; cursor: pointer; 
+            display: flex; justify-content: center; align-items: center; 
+        }
+        .music-btn:hover { transform: scale(1.1); }
 
         /* แจ้งเตือน */
-        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 12px; color: white; font-weight: 600; display: none; z-index: 999; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        #alert.show { display: block; animation: fadeIn 0.3s ease; }
+        #alert { 
+            position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; 
+            border-radius: 12px; color: white; font-weight: 600; display: none; 
+            z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        }
+        #alert.show { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
 
+    <!-- แถบเมนูด้านบน -->
     <nav>
         <div class="logo" onclick="switchView('home')">⚡ Tanny Script Hub</div>
-        <div class="nav-right" id="nav-buttons"></div>
+        <div class="nav-right" id="nav-buttons">
+            <!-- ปุ่มจะถูกสร้างโดย JS -->
+        </div>
     </nav>
 
-    <!-- หน้าแรก -->
+    <!-- หน้าแรก (แสดงสคริปต์) -->
     <div id="view-home" class="view active">
         <div class="hero">
             <h1>ศูนย์รวมสคริปต์</h1>
@@ -77,25 +137,28 @@
         <div class="grid" id="script-container"></div>
     </div>
 
-    <!-- หน้าล็อกอิน/สมัคร -->
+    <!-- หน้าล็อกอิน/สมัครสมาชิก -->
     <div id="view-auth" class="view">
         <div class="glass-box auth-box">
             <h2 id="auth-title" style="margin-bottom: 20px;">เข้าสู่ระบบ</h2>
-            <input type="text" id="auth-username" placeholder="ชื่อผู้ใช้">
-            <input type="password" id="auth-password" placeholder="รหัสผ่าน">
+            <input type="text" id="auth-username" placeholder="ชื่อผู้ใช้ (Username)">
+            <input type="password" id="auth-password" placeholder="รหัสผ่าน (Password)">
             <button class="btn btn-primary" id="auth-submit-btn" style="width: 100%; margin-bottom: 15px;" onclick="handleAuthSubmit()">เข้าสู่ระบบ</button>
-            <p style="color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="toggleAuthMode()" id="auth-toggle-text">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</p>
+            <p style="color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="toggleAuthMode()" id="auth-toggle-text">
+                ยังไม่มีบัญชี? สมัครสมาชิกที่นี่
+            </p>
         </div>
     </div>
 
-    <!-- หลังบ้าน (Admin) -->
+    <!-- หน้าหลังบ้าน (Admin) -->
     <div id="view-admin" class="view">
         <div class="admin-tabs">
             <button class="tab-btn active" onclick="switchAdminTab('scripts', this)">📋 จัดการสคริปต์</button>
-            <button class="tab-btn" onclick="switchAdminTab('users', this)">👥 ดูรายชื่อผู้ใช้</button>
+            <button class="tab-btn" onclick="switchAdminTab('users', this)">👥 รายชื่อผู้ใช้</button>
             <button class="tab-btn" onclick="switchAdminTab('music', this)">🎵 ตั้งค่าเพลง</button>
         </div>
 
+        <!-- แท็บที่ 1: สคริปต์ -->
         <div id="tab-scripts" class="admin-section active">
             <div class="glass-box" style="margin-bottom: 20px;">
                 <h3 style="margin-bottom: 15px;">➕ เพิ่มสคริปต์ใหม่</h3>
@@ -107,6 +170,7 @@
             <div id="admin-script-list"></div>
         </div>
 
+        <!-- แท็บที่ 2: ผู้ใช้ -->
         <div id="tab-users" class="admin-section">
             <div class="glass-box" style="margin-bottom: 20px;">
                 <h3>👥 รายชื่อผู้ใช้ในระบบ</h3>
@@ -114,6 +178,7 @@
             <div id="admin-user-list"></div>
         </div>
 
+        <!-- แท็บที่ 3: เพลง -->
         <div id="tab-music" class="admin-section">
             <div class="glass-box">
                 <h3 style="margin-bottom: 15px;">🎵 ใส่ลิงก์ YouTube</h3>
@@ -133,11 +198,12 @@
         <iframe id="youtube-iframe" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
+    <!-- แจ้งเตือน -->
     <div id="alert">Alert!</div>
 
     <script>
         // ==========================================
-        // 1. ระบบฐานข้อมูล (กันเว็บพัง)
+        // 1. ระบบฐานข้อมูล (LocalStorage + Fallback)
         // ==========================================
         const now = new Date().toLocaleString('th-TH');
         let memoryUsers = [{ id: 1, username: "admin", password: "admin123", role: "admin", date: now }];
@@ -145,8 +211,10 @@
 
         function getUsers() { try { return JSON.parse(localStorage.getItem('tanny_users')) || memoryUsers; } catch(e) { return memoryUsers; } }
         function saveUsers(u) { memoryUsers = u; try { localStorage.setItem('tanny_users', JSON.stringify(u)); } catch(e) {} }
+        
         function getScripts() { try { return JSON.parse(localStorage.getItem('tanny_scripts')) || memoryScripts; } catch(e) { return memoryScripts; } }
         function saveScripts(s) { memoryScripts = s; try { localStorage.setItem('tanny_scripts', JSON.stringify(s)); } catch(e) {} }
+        
         function getCurrentUser() { try { return JSON.parse(sessionStorage.getItem('tanny_session')) || null; } catch(e) { return null; } }
         function setSession(u) { try { if(u) sessionStorage.setItem('tanny_session', JSON.stringify(u)); else sessionStorage.removeItem('tanny_session'); } catch(e) {} updateNavbar(); }
 
@@ -177,6 +245,7 @@
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
+            
             if(tabName === 'users') renderAdminUsers();
             if(tabName === 'music') loadMusicSettings();
         }
@@ -332,35 +401,4 @@
                 playerDiv.style.display = 'flex';
                 iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&loop=1&playlist=${videoId}&controls=0`;
             } else { playerDiv.style.display = 'none'; }
-        }
-
-        function toggleMusic() {
-            const iframe = document.getElementById('youtube-iframe');
-            const btn = document.getElementById('music-toggle-btn');
-            if (!iframe.src) return;
-
-            if (isMusicPlaying) {
-                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                btn.innerText = "▶"; isMusicPlaying = false;
-            } else {
-                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                btn.innerText = "⏸"; isMusicPlaying = true;
-            }
-        }
-
-        // ==========================================
-        // 6. ฟังก์ชันเสริม & โหลดครั้งแรก
-        // ==========================================
-        function showAlert(msg, isError = false) {
-            const alertBox = document.getElementById('alert');
-            alertBox.innerText = msg;
-            alertBox.style.background = isError ? 'var(--danger)' : 'var(--success)';
-            alertBox.classList.add('show');
-            setTimeout(() => alertBox.classList.remove('show'), 3000);
-        }
-
-        // เริ่มระบบ
-        document.addEventListener("DOMContentLoaded", () => {
-            if(!getUsers().length) saveUsers(memoryUsers);
-            if(!getScripts().length) saveScripts(memoryScripts);
-            updateNavbar(); renderHome(); renderAdminScripts
+   
