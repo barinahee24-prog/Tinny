@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanny Hub - Real-time Admin & Music</title>
+    <title>Tanny Script Hub - All-in-One</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,67 +13,58 @@
             --danger: #ef4444; --success: #10b981;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-        body { color: var(--text-main); min-height: 100vh; background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b2e); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        
+        /* พื้นหลังเคลื่อนไหว */
+        body { color: var(--text-main); min-height: 100vh; background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b2e); background-size: 400% 400%; animation: gradientBG 15s ease infinite; overflow-x: hidden; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
+        /* Navbar */
         nav { background: rgba(255, 255, 255, 0.03); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
-        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
-        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; white-space: nowrap; }
+        .nav-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end; }
         
+        /* ปุ่มกด */
         .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: 0.2s; }
         .btn-primary { background: rgba(139, 92, 246, 0.3); color: white; }
         .btn-danger { background: rgba(239, 68, 68, 0.3); color: white; }
         .btn-success { background: rgba(16, 185, 129, 0.3); color: white; }
 
+        /* โครงสร้างหน้า */
         .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
         .view.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .hero { text-align: center; padding: 40px 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card, .glass-box { background: var(--glass-bg); backdrop-filter: blur(12px); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); }
+        .card, .glass-box { background: var(--glass-bg); backdrop-filter: blur(12px); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
         .auth-box { max-width: 400px; margin: 50px auto; text-align: center; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); color: white; font-family: 'Kanit'; }
         
-        /* Admin Tabs */
+        /* ช่องกรอกข้อมูล */
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); color: white; font-family: 'Kanit'; }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        /* หลังบ้าน */
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: black; font-weight: bold; }
         .admin-section { display: none; }
         .admin-section.active { display: block; animation: fadeIn 0.4s ease; }
-
         .admin-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); margin-bottom: 10px; }
-        
-        /* Real-time Status Dot */
-        .live-dot { display: inline-block; width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; margin-right: 5px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
-        /* Floating Music Player */
-        #music-player {
-            position: fixed; bottom: 20px; left: 20px; z-index: 999;
-            background: var(--glass-bg); backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border); border-radius: 50px;
-            padding: 10px 15px; display: none; align-items: center; gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: 0.3s;
-        }
-        #music-player:hover { background: rgba(255,255,255,0.1); }
-        #music-player iframe { width: 0; height: 0; border: none; display: none; } /* ซ่อนวิดีโอ เหลือแค่เสียง */
-        
-        .music-btn {
-            background: var(--primary); border: none; width: 40px; height: 40px;
-            border-radius: 50%; color: black; font-size: 18px; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .music-btn:hover { transform: scale(1.1); }
+        /* เครื่องเล่นเพลง */
+        #music-player { position: fixed; bottom: 20px; left: 20px; z-index: 999; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 10px 15px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        #music-player iframe { width: 0; height: 0; border: none; display: none; }
+        .music-btn { background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; color: black; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
-        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 12px; color: white; font-weight: 600; display: none; z-index: 999; }
-        #alert.show { display: block; }
+        /* แจ้งเตือน */
+        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 12px; color: white; font-weight: 600; display: none; z-index: 999; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        #alert.show { display: block; animation: fadeIn 0.3s ease; }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo" onclick="switchView('home')">⚡ Tanny Hub</div>
+        <div class="logo" onclick="switchView('home')">⚡ Tanny Script Hub</div>
         <div class="nav-right" id="nav-buttons"></div>
     </nav>
 
@@ -86,7 +77,7 @@
         <div class="grid" id="script-container"></div>
     </div>
 
-    <!-- หน้าล็อกอิน -->
+    <!-- หน้าล็อกอิน/สมัคร -->
     <div id="view-auth" class="view">
         <div class="glass-box auth-box">
             <h2 id="auth-title" style="margin-bottom: 20px;">เข้าสู่ระบบ</h2>
@@ -97,15 +88,14 @@
         </div>
     </div>
 
-    <!-- หน้าหลังบ้าน (Admin) -->
+    <!-- หลังบ้าน (Admin) -->
     <div id="view-admin" class="view">
         <div class="admin-tabs">
             <button class="tab-btn active" onclick="switchAdminTab('scripts', this)">📋 จัดการสคริปต์</button>
-            <button class="tab-btn" onclick="switchAdminTab('users', this)">👥 ดูรายชื่อผู้ใช้ (Live)</button>
+            <button class="tab-btn" onclick="switchAdminTab('users', this)">👥 ดูรายชื่อผู้ใช้</button>
             <button class="tab-btn" onclick="switchAdminTab('music', this)">🎵 ตั้งค่าเพลง</button>
         </div>
 
-        <!-- แท็บจัดการสคริปต์ -->
         <div id="tab-scripts" class="admin-section active">
             <div class="glass-box" style="margin-bottom: 20px;">
                 <h3 style="margin-bottom: 15px;">➕ เพิ่มสคริปต์ใหม่</h3>
@@ -117,20 +107,17 @@
             <div id="admin-script-list"></div>
         </div>
 
-        <!-- แท็บดูรายชื่อผู้ใช้ Real-time -->
         <div id="tab-users" class="admin-section">
             <div class="glass-box" style="margin-bottom: 20px;">
-                <h3><span class="live-dot"></span> รายชื่อผู้ใช้ในระบบ (อัปเดตเรียลไทม์)</h3>
+                <h3>👥 รายชื่อผู้ใช้ในระบบ</h3>
             </div>
             <div id="admin-user-list"></div>
         </div>
 
-        <!-- แท็บตั้งค่าเพลง YouTube -->
         <div id="tab-music" class="admin-section">
             <div class="glass-box">
-                <h3 style="margin-bottom: 15px;">🎵 ใส่ลิงก์ YouTube เพื่อเล่นเป็นเพลงพื้นหลัง</h3>
-                <p style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">ตัวอย่าง: https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
-                <input type="text" id="music-url-input" placeholder="วางลิงก์ YouTube ที่นี่...">
+                <h3 style="margin-bottom: 15px;">🎵 ใส่ลิงก์ YouTube</h3>
+                <input type="text" id="music-url-input" placeholder="เช่น https://www.youtube.com/watch?v=dQw4w9WgXcQ">
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-success" onclick="saveMusic()">บันทึกเพลง</button>
                     <button class="btn btn-danger" onclick="removeMusic()">ลบเพลงออก</button>
@@ -139,7 +126,7 @@
         </div>
     </div>
 
-    <!-- Floating Music Player -->
+    <!-- เครื่องเล่นเพลง -->
     <div id="music-player">
         <button class="music-btn" id="music-toggle-btn" onclick="toggleMusic()">▶</button>
         <span style="font-size: 14px; font-weight: 600; color: white;">BGM</span>
@@ -150,7 +137,7 @@
 
     <script>
         // ==========================================
-        // ระบบฐานข้อมูล (LocalStorage + Memory Fallback)
+        // 1. ระบบฐานข้อมูล (กันเว็บพัง)
         // ==========================================
         const now = new Date().toLocaleString('th-TH');
         let memoryUsers = [{ id: 1, username: "admin", password: "admin123", role: "admin", date: now }];
@@ -158,27 +145,20 @@
 
         function getUsers() { try { return JSON.parse(localStorage.getItem('tanny_users')) || memoryUsers; } catch(e) { return memoryUsers; } }
         function saveUsers(u) { memoryUsers = u; try { localStorage.setItem('tanny_users', JSON.stringify(u)); } catch(e) {} }
-
         function getScripts() { try { return JSON.parse(localStorage.getItem('tanny_scripts')) || memoryScripts; } catch(e) { return memoryScripts; } }
         function saveScripts(s) { memoryScripts = s; try { localStorage.setItem('tanny_scripts', JSON.stringify(s)); } catch(e) {} }
-
         function getCurrentUser() { try { return JSON.parse(sessionStorage.getItem('tanny_session')) || null; } catch(e) { return null; } }
         function setSession(u) { try { if(u) sessionStorage.setItem('tanny_session', JSON.stringify(u)); else sessionStorage.removeItem('tanny_session'); } catch(e) {} updateNavbar(); }
 
         // ==========================================
-        // ระบบ Navbar & Routing
+        // 2. ระบบ Navbar & เปลี่ยนหน้า
         // ==========================================
         function updateNavbar() {
             const navBtns = document.getElementById('nav-buttons');
             const user = getCurrentUser();
-
             if (user) {
                 let adminBtn = user.role === 'admin' ? `<button class="btn btn-success" onclick="switchView('admin')">🔒 หลังบ้าน</button>` : '';
-                navBtns.innerHTML = `
-                    ${adminBtn}
-                    <span style="color:white; align-self:center; margin-right:10px;">👤 ${user.username}</span>
-                    <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
-                `;
+                navBtns.innerHTML = `${adminBtn}<span style="color:white; margin-right:10px;">👤 ${user.username}</span><button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>`;
             } else {
                 navBtns.innerHTML = `<button class="btn btn-primary" onclick="switchView('auth')">🔑 เข้าสู่ระบบ / สมัคร</button>`;
             }
@@ -186,12 +166,8 @@
 
         function switchView(viewName) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            if (viewName === 'admin') {
-                const user = getCurrentUser();
-                if (!user || user.role !== 'admin') {
-                    showAlert("❌ ไม่มีสิทธิ์เข้าถึง", true);
-                    viewName = 'home';
-                }
+            if (viewName === 'admin' && (!getCurrentUser() || getCurrentUser().role !== 'admin')) {
+                showAlert("❌ ไม่มีสิทธิ์เข้าถึง", true); viewName = 'home';
             }
             document.getElementById(`view-${viewName}`).classList.add('active');
         }
@@ -201,13 +177,12 @@
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
-            
             if(tabName === 'users') renderAdminUsers();
             if(tabName === 'music') loadMusicSettings();
         }
 
         // ==========================================
-        // ระบบ Auth (Login/Register)
+        // 3. ระบบ Auth (ล็อกอิน/สมัคร)
         // ==========================================
         let isRegisterMode = false;
 
@@ -221,23 +196,20 @@
         function handleAuthSubmit() {
             const username = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value;
-
             if (!username || !password) { showAlert("⚠️ กรอกข้อมูลให้ครบ", true); return; }
+            
             const users = getUsers();
-
             if (isRegisterMode) {
                 if (users.find(u => u.username === username)) { showAlert("❌ ชื่อนี้ถูกใช้แล้ว", true); return; }
                 users.push({ id: Date.now(), username: username, password: password, role: "user", date: new Date().toLocaleString('th-TH') });
                 saveUsers(users);
                 showAlert("✅ สมัครสำเร็จ! เข้าสู่ระบบได้เลย");
-                isRegisterMode = false;
-                toggleAuthMode();
+                isRegisterMode = false; toggleAuthMode();
                 document.getElementById('auth-password').value = '';
             } else {
                 const user = users.find(u => u.username === username && u.password === password);
                 if (user) {
-                    setSession(user);
-                    showAlert(`✅ ยินดีต้อนรับ ${user.username}`);
+                    setSession(user); showAlert(`✅ ยินดีต้อนรับ ${user.username}`);
                     document.getElementById('auth-username').value = '';
                     document.getElementById('auth-password').value = '';
                     switchView('home');
@@ -245,14 +217,10 @@
             }
         }
 
-        function logout() {
-            setSession(null);
-            showAlert("👋 ออกจากระบบแล้ว");
-            switchView('home');
-        }
+        function logout() { setSession(null); showAlert("👋 ออกจากระบบแล้ว"); switchView('home'); }
 
         // ==========================================
-        // ระบบจัดการสคริปต์ & ผู้ใช้
+        // 4. ระบบแสดงผลหน้าเว็บ
         // ==========================================
         function renderHome() {
             const container = document.getElementById('script-container');
@@ -261,11 +229,9 @@
             scripts.forEach(s => {
                 container.innerHTML += `
                     <div class="card">
-                        <h3>${s.name}</h3>
-                        <p>${s.desc}</p>
+                        <h3>${s.name}</h3><p>${s.desc}</p>
                         <button class="btn btn-primary" style="width:100%" onclick="copyScript('${s.url}')">📋 คัดลอกสคริปต์</button>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
@@ -276,13 +242,9 @@
             scripts.forEach(s => {
                 container.innerHTML += `
                     <div class="admin-item">
-                        <div>
-                            <h4 style="color:white;">${s.name}</h4>
-                            <p style="color:var(--text-muted); font-size:12px;">${s.desc}</p>
-                        </div>
+                        <div><h4 style="color:white;">${s.name}</h4><p style="color:var(--text-muted); font-size:12px;">${s.desc}</p></div>
                         <button class="btn btn-danger" onclick="deleteScript(${s.id})">ลบ</button>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
@@ -297,19 +259,11 @@
                     <div class="admin-item">
                         <div>
                             <h4 style="color:white;">👤 ${u.username} <span style="font-size:12px; color:${roleColor};">[${u.role}]</span></h4>
-                            <p style="color:var(--text-muted); font-size:12px;">📅 สมัครเมื่อ: ${u.date}</p>
+                            <p style="color:var(--text-muted); font-size:12px;">📅 ${u.date}</p>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
-
-        setInterval(() => {
-            if(document.getElementById('view-admin').classList.contains('active') && 
-               document.getElementById('tab-users').classList.contains('active')) {
-                renderAdminUsers();
-            }
-        }, 1000);
 
         function addScript() {
             const name = document.getElementById('new-name').value;
@@ -324,17 +278,13 @@
             document.getElementById('new-name').value = '';
             document.getElementById('new-desc').value = '';
             document.getElementById('new-url').value = '';
-            showAlert("✅ เพิ่มสำเร็จ!");
-            renderHome();
-            renderAdminScripts();
+            showAlert("✅ เพิ่มสำเร็จ!"); renderHome(); renderAdminScripts();
         }
 
         function deleteScript(id) {
             if(confirm("ลบสคริปต์นี้?")) {
                 saveScripts(getScripts().filter(s => s.id !== id));
-                showAlert("🗑️ ลบแล้ว");
-                renderHome();
-                renderAdminScripts();
+                showAlert("🗑️ ลบแล้ว"); renderHome(); renderAdminScripts();
             }
         }
 
@@ -343,12 +293,10 @@
         }
 
         // ==========================================
-        // ระบบจัดการเพลง YouTube
+        // 5. ระบบเพลง YouTube
         // ==========================================
-        let ytPlayer;
         let isMusicPlaying = false;
 
-        // ฟังก์ชันดึง ID วิดีโอจากลิงก์ YouTube
         function getYouTubeID(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -358,14 +306,10 @@
         function saveMusic() {
             const url = document.getElementById('music-url-input').value;
             const videoId = getYouTubeID(url);
-            
             if (videoId) {
                 localStorage.setItem('tanny_music_id', videoId);
-                showAlert("✅ บันทึกเพลงสำเร็จ!");
-                loadMusicPlayer();
-            } else {
-                showAlert("❌ ลิงก์ YouTube ไม่ถูกต้อง", true);
-            }
+                showAlert("✅ บันทึกเพลงสำเร็จ!"); loadMusicPlayer();
+            } else { showAlert("❌ ลิงก์ YouTube ไม่ถูกต้อง", true); }
         }
 
         function removeMusic() {
@@ -377,17 +321,46 @@
 
         function loadMusicSettings() {
             const videoId = localStorage.getItem('tanny_music_id');
-            if(videoId) {
-                document.getElementById('music-url-input').value = `https://www.youtube.com/watch?v=${videoId}`;
-            } else {
-                document.getElementById('music-url-input').value = '';
-            }
+            document.getElementById('music-url-input').value = videoId ? `https://www.youtube.com/watch?v=${videoId}` : '';
         }
 
         function loadMusicPlayer() {
             const videoId = localStorage.getItem('tanny_music_id');
             const playerDiv = document.getElementById('music-player');
             const iframe = document.getElementById('youtube-iframe');
-            
             if (videoId) {
-                playe
+                playerDiv.style.display = 'flex';
+                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&loop=1&playlist=${videoId}&controls=0`;
+            } else { playerDiv.style.display = 'none'; }
+        }
+
+        function toggleMusic() {
+            const iframe = document.getElementById('youtube-iframe');
+            const btn = document.getElementById('music-toggle-btn');
+            if (!iframe.src) return;
+
+            if (isMusicPlaying) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                btn.innerText = "▶"; isMusicPlaying = false;
+            } else {
+                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                btn.innerText = "⏸"; isMusicPlaying = true;
+            }
+        }
+
+        // ==========================================
+        // 6. ฟังก์ชันเสริม & โหลดครั้งแรก
+        // ==========================================
+        function showAlert(msg, isError = false) {
+            const alertBox = document.getElementById('alert');
+            alertBox.innerText = msg;
+            alertBox.style.background = isError ? 'var(--danger)' : 'var(--success)';
+            alertBox.classList.add('show');
+            setTimeout(() => alertBox.classList.remove('show'), 3000);
+        }
+
+        // เริ่มระบบ
+        document.addEventListener("DOMContentLoaded", () => {
+            if(!getUsers().length) saveUsers(memoryUsers);
+            if(!getScripts().length) saveScripts(memoryScripts);
+            updateNavbar(); renderHome(); renderAdminScripts
