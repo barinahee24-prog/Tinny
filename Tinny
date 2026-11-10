@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanny Script Hub | ศูนย์รวมสคริปต์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0d12;
+            --card-bg: #1a1a24;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 36, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        /* Grid Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px 20px;
+            flex: 1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        /* Script Card */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .tag.blox { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .tag.mm2 { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .tag.universal { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        .btn-copy {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-copy.copied {
+            background-color: var(--success);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            header { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>⚡</span> Tanny Script Hub
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>ศูนย์รวมสคริปต์คุณภาพ</h1>
+        <p>เลือกสคริปต์ที่คุณต้องการ แล้วกดคัดลอกไปใช้งานได้ทันที</p>
+    </section>
+
+    <main class="container">
+        <div class="grid">
+            
+            <!-- การ์ดที่ 1: Blox Fruits -->
+            <div class="card">
+                <div class="card-icon">🍎</div>
+                <span class="tag blox">Blox Fruits</span>
+                <h3>Tanny Blox Fruits Hub</h3>
+                <p>สคริปต์สำหรับ Blox Fruits รวมฟีเจอร์ Speed, Jump, Noclip และระบบหาเซิร์ฟเวอร์</p>
+                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/YOUR_GITHUB/main/bloxfruits.lua', this)">
+                    📋 คัดลอกสคริปต์
+                </button>
+            </div>
+
+            <!-- การ์ดที่ 2: MM2 -->
+            <div class="card">
+                <div class="card-icon">🔪</div>
+                <span class="tag mm2">Murder Mystery 2</span>
+                <h3>Tanny MM2 Map Hub</h3>
+                <p>สคริปต์ ESP แสดงบทบาท (Murderer/Sheriff) พร้อมระบบวาร์ปหาเป้าหมายและแสดงระยะทาง</p>
+                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/YOUR_GITHUB/main/mm2.lua', this)">
+                    📋 คัดลอกสคริปต์
+                </button>
+            </div>
+
+            <!-- การ์ดที่ 3: Universal -->
+            <div class="card">
+                <div class="card-icon">🌐</div>
+                <span class="tag universal">Universal</span>
+                <h3>Tanny Universal Hub</h3>
+                <p>สคริปต์ที่ใช้ได้เกือบทุกเกม ปรับความเร็ว กระโดด Anti-AFK และ Server Hop</p>
+                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/YOUR_GITHUB/main/universal.lua', this)">
+                    📋 คัดลอกสคริปต์
+                </button>
+            </div>
+
+            <!-- การ์ดที่ 4: Infinite Yield (แนะนำ) -->
+            <div class="card">
+                <div class="card-icon">♾️</div>
+                <span class="tag universal">แนะนำ</span>
+                <h3>Infinite Yield (IY)</h3>
+                <p>สคริปต์ Universal ที่ดีที่สุดและเสถียรที่สุด มีฟีเจอร์ให้เลือกใช้มากกว่า 100 รายการ</p>
+                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source', this)">
+                    📋 คัดลอกสคริปต์
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Tanny Script Hub. สคริปต์ทั้งหมดใช้เพื่อการศึกษาเท่านั้น</p>
+    </footer>
+
+    <script>
+        function copyScript(url, btnElement) {
+            // สร้าง Loadstring Command
+            const loadstringCode = `loadstring(game:HttpGet("${url}"))()`;
+            
+            // คัดลอกลง Clipboard
+            navigator.clipboard.writeText(loadstringCode).then(() => {
+                // เปลี่ยนสถานะปุ่มเมื่อคัดลอกสำเร็จ
+                const originalText = btnElement.innerHTML;
+                btnElement.innerHTML = "✅ คัดลอกแล้ว!";
+                btnElement.classList.add("copied");
+                
+                // คืนค่าปุ่มกลับเป็นเหมือนเดิมใน 2 วินาที
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.classList.remove("copied");
+                }, 2000);
+            }).catch(err => {
+                alert("เกิดข้อผิดพลาดในการคัดลอก กรุณาลองใหม่");
+            });
+        }
+    </script>
+</body>
+</html>
