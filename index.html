@@ -229,7 +229,7 @@
         <!-- หน้า Login -->
         <div id="login-section" class="login-box">
             <h2 style="margin-bottom: 20px;">เข้าสู่ระบบแอดมิน</h2>
-            <input type="password" id="password-input" placeholder="รหัสผ่าน (ใส่: 311235)">
+            <input type="password" id="password-input" placeholder="รหัสผ่าน">
             <button class="btn btn-primary" style="width: 100%;" onclick="login()">เข้าสู่ระบบ</button>
         </div>
 
@@ -338,7 +338,7 @@
         // ==========================================
         function login() {
             const pass = document.getElementById('password-input').value;
-            if (pass === 'admin123') {
+            if (pass === '311235') {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('admin-dashboard').style.display = 'block';
                 renderAdmin();
