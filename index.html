@@ -3,164 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanny Script Hub | ศูนย์รวมสคริปต์</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0d0d12;
-            --card-bg: #1a1a24;
-            --primary: #8b5cf6;
-            --primary-hover: #7c3aed;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Kanit', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        header {
-            background: rgba(26, 26, 36, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 20px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 600;
-            background: linear-gradient(90deg, #8b5cf6, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 60px 20px;
-            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
-        }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .hero p {
-            color: var(--text-muted);
-            font-size: 18px;
-        }
-
-        /* Grid Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 60px 20px;
-            flex: 1;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        /* Script Card */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
-            border-color: rgba(139, 92, 246, 0.3);
-        }
-
-        .card-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-        }
-
-        .card h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .tag.blox { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .tag.mm2 { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        .tag.universal { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-
-        .btn-copy {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-family: 'Kanit', sans-serif;
-        }
-
-        .btn-copy:hover {
-            background-color: var(--primary-hover);
-        }
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tanny Script Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -169,40 +11,128 @@
             --text-main: #f3f4f6; --text-muted: #9ca3af; --danger: #ef4444; --success: #10b981;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; }
+        
+        /* พื้นหลังพร้อมเอฟเฟกต์แสงลอย */
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
+        body::before, body::after {
+            content: ''; position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1;
+        }
+        body::before {
+            width: 400px; height: 400px; background: rgba(139, 92, 246, 0.15);
+            top: -100px; left: -100px; animation: floatBg 10s infinite alternate;
+        }
+        body::after {
+            width: 300px; height: 300px; background: rgba(59, 130, 246, 0.15);
+            bottom: -50px; right: -50px; animation: floatBg 8s infinite alternate-reverse;
+        }
 
         /* Navbar */
-        nav { background: rgba(26, 26, 36, 0.9); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
-        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
-        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #7c3aed; }
+        nav { 
+            background: rgba(26, 26, 36, 0.7); padding: 15px 20px; display: flex; justify-content: space-between; 
+            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; 
+            z-index: 100; backdrop-filter: blur(10px); animation: slideDown 0.5s ease-out;
+        }
+        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; transition: 0.3s; text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+        .logo:hover { transform: scale(1.05); text-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
+        
+        /* ปุ่มกด */
+        .btn { 
+            padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; 
+            font-family: 'Kanit'; transition: all 0.2s ease; position: relative; overflow: hidden;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
+        .btn-primary:hover { background: #7c3aed; box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
         .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
 
         /* Container Views */
         .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .view.active { display: block; }
+        .view.active { display: block; animation: fadeInUp 0.5s ease-out forwards; }
 
         /* --- FRONTEND STYLES --- */
-        .hero { text-align: center; padding: 40px 20px; }
-        .hero h1 { font-size: 36px; margin-bottom: 10px; color: white; }
+        .hero { text-align: center; padding: 40px 20px; animation: fadeInUp 0.6s ease-out; }
+        .hero h1 { font-size: 36px; margin-bottom: 10px; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #333; }
-        .card h3 { color: #a78bfa; margin-bottom: 10px; }
+        
+        /* การ์ดสคริปต์ */
+        .card { 
+            background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #333; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; /* ซ่อนไว้ก่อนเพื่อทำอนิเมชัน */
+            animation: cardPop 0.5s ease-out forwards;
+        }
+        .card:hover { 
+            transform: translateY(-10px) scale(1.02); 
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.2), inset 0 0 15px rgba(139, 92, 246, 0.1); 
+        }
+        .card h3 { color: #a78bfa; margin-bottom: 10px; transition: 0.3s; }
+        .card:hover h3 { color: #c4b5fd; text-shadow: 0 0 10px rgba(196, 181, 253, 0.5); }
         .card p { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
         
         /* --- BACKEND (ADMIN) STYLES --- */
-        .login-box { max-width: 400px; margin: 50px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; }
-        .login-box input, .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #444; background: #0d0d12; color: white; font-family: 'Kanit'; }
+        .login-box { max-width: 400px; margin: 50px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        .login-box input, .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #444; 
+            background: #0d0d12; color: white; font-family: 'Kanit'; transition: 0.3s; 
+        }
+        .login-box input:focus, .form-group input:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
         .form-group textarea { resize: vertical; height: 80px; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .admin-list { display: flex; flex-direction: column; gap: 10px; }
-        .admin-item { background: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
+        
+        /* รายการในหลังบ้าน */
+        .admin-item { 
+            background: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; 
+            justify-content: space-between; align-items: center; border-left: 4px solid var(--primary);
+            transition: 0.3s; animation: slideInRight 0.4s ease-out forwards; 
+        }
+        .admin-item:hover { transform: translateX(5px); background: #22222e; }
         .admin-item h4 { color: white; }
         .admin-item p { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
         
-        /* Alert */
-        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: 600; display: none; z-index: 999; }
+        /* Alert แจ้งเตือน */
+        #alert { 
+            position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; 
+            color: white; font-weight: 600; display: none; z-index: 999; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        #alert.show { display: block; animation: slideInAlert 0.4s ease-out; }
+
+        /* --- Animations (Keyframes) --- */
+        @keyframes floatBg {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInAlert {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
@@ -229,7 +159,7 @@
         <!-- หน้า Login -->
         <div id="login-section" class="login-box">
             <h2 style="margin-bottom: 20px;">เข้าสู่ระบบแอดมิน</h2>
-            <input type="password" id="password-input" placeholder="รหัสผ่าน">
+            <input type="password" id="password-input" placeholder="กรอกรหัสผ่าน">
             <button class="btn btn-primary" style="width: 100%;" onclick="login()">เข้าสู่ระบบ</button>
         </div>
 
@@ -241,7 +171,7 @@
             </div>
 
             <!-- ฟอร์มเพิ่มสคริปต์ -->
-            <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333;">
                 <h3 style="margin-bottom: 15px;">➕ เพิ่มสคริปต์ใหม่</h3>
                 <div class="form-group">
                     <input type="text" id="new-name" placeholder="ชื่อสคริปต์ (เช่น Tanny Blox Fruits)">
@@ -268,7 +198,6 @@
         // ==========================================
         // ระบบฐานข้อมูลจำลอง (ใช้ LocalStorage)
         // ==========================================
-        // ข้อมูลเริ่มต้น
         const defaultScripts = [
             { id: 1, name: "Tanny Universal Hub", desc: "สคริปต์ครอบจักรวาล Speed, Jump, Anti-AFK", url: "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source" },
             { id: 2, name: "Tanny MM2 Map", desc: "ESP บทบาท และระบบวาร์ป", url: "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source" }
@@ -314,9 +243,12 @@
             const scripts = getScripts();
             container.innerHTML = '';
 
-            scripts.forEach(s => {
+            scripts.forEach((s, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
+                // เพิ่ม Delay ให้การ์ดโผล่มาทีละใบ
+                card.style.animationDelay = `${index * 0.1}s`;
+                
                 card.innerHTML = `
                     <h3>${s.name}</h3>
                     <p>${s.desc}</p>
@@ -340,7 +272,9 @@
             const pass = document.getElementById('password-input').value;
             if (pass === '311235') {
                 document.getElementById('login-section').style.display = 'none';
-                document.getElementById('admin-dashboard').style.display = 'block';
+                const dashboard = document.getElementById('admin-dashboard');
+                dashboard.style.display = 'block';
+                dashboard.style.animation = 'fadeInUp 0.4s ease-out';
                 renderAdmin();
             } else {
                 showAlert("❌ รหัสผ่านไม่ถูกต้อง!", true);
@@ -367,7 +301,6 @@
             scripts.push({ id: Date.now(), name: name, desc: desc || "ไม่มีคำอธิบาย", url: url });
             saveScripts(scripts);
 
-            // เคลียร์ฟอร์ม
             document.getElementById('new-name').value = '';
             document.getElementById('new-desc').value = '';
             document.getElementById('new-url').value = '';
@@ -393,9 +326,10 @@
                 return;
             }
 
-            scripts.forEach(s => {
+            scripts.forEach((s, index) => {
                 const item = document.createElement('div');
                 item.className = 'admin-item';
+                item.style.animationDelay = `${index * 0.05}s`; // อนิเมชันรายการสไลด์
                 item.innerHTML = `
                     <div>
                         <h4>${s.name}</h4>
@@ -415,8 +349,11 @@
             const alertBox = document.getElementById('alert');
             alertBox.innerText = msg;
             alertBox.style.background = isError ? 'var(--danger)' : 'var(--success)';
-            alertBox.style.display = 'block';
-            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+            alertBox.classList.add('show');
+            
+            setTimeout(() => { 
+                alertBox.classList.remove('show'); 
+            }, 3000);
         }
 
         // เริ่มต้นโหลดข้อมูล
