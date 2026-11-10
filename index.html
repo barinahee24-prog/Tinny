@@ -156,115 +156,271 @@
         .btn-copy:hover {
             background-color: var(--primary-hover);
         }
-
-        .btn-copy.copied {
-            background-color: var(--success);
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanny Script Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0d12; --card-bg: #1a1a24; --primary: #8b5cf6;
+            --text-main: #f3f4f6; --text-muted: #9ca3af; --danger: #ef4444; --success: #10b981;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-            font-size: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        /* Navbar */
+        nav { background: rgba(26, 26, 36, 0.9); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #7c3aed; }
+        .btn-danger { background: var(--danger); color: white; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            header { padding: 15px 20px; }
-        }
+        /* Container Views */
+        .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .view.active { display: block; }
+
+        /* --- FRONTEND STYLES --- */
+        .hero { text-align: center; padding: 40px 20px; }
+        .hero h1 { font-size: 36px; margin-bottom: 10px; color: white; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #333; }
+        .card h3 { color: #a78bfa; margin-bottom: 10px; }
+        .card p { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
+        
+        /* --- BACKEND (ADMIN) STYLES --- */
+        .login-box { max-width: 400px; margin: 50px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; }
+        .login-box input, .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #444; background: #0d0d12; color: white; font-family: 'Kanit'; }
+        .form-group textarea { resize: vertical; height: 80px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .admin-list { display: flex; flex-direction: column; gap: 10px; }
+        .admin-item { background: var(--card-bg); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
+        .admin-item h4 { color: white; }
+        .admin-item p { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+        
+        /* Alert */
+        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: 600; display: none; z-index: 999; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">
-            <span>⚡</span> Tanny Script Hub
+    <!-- Navbar -->
+    <nav>
+        <div class="logo" onclick="switchView('home')">⚡ Tanny Script Hub</div>
+        <button class="btn btn-primary" id="navBtn" onclick="switchView('admin')">🔒 หลังบ้าน (Admin)</button>
+    </nav>
+
+    <!-- View: Frontend Home -->
+    <div id="view-home" class="view active">
+        <div class="hero">
+            <h1>ศูนย์รวมสคริปต์</h1>
+            <p>กดคัดลอกเพื่อนำไปใช้ใน Executor</p>
         </div>
-    </header>
-
-    <section class="hero">
-        <h1>ศูนย์รวมสคริปต์คุณภาพ</h1>
-        <p>เลือกสคริปต์ที่คุณต้องการ แล้วกดคัดลอกไปใช้งานได้ทันที</p>
-    </section>
-
-    <main class="container">
-        <div class="grid">
-            
-            <!-- การ์ดที่ 1: Blox Fruits -->
-            <div class="card">
-                <div class="card-icon">🍎</div>
-                <span class="tag blox">Blox Fruits</span>
-                <h3>Tanny Blox Fruits Hub</h3>
-                <p>สคริปต์สำหรับ Blox Fruits รวมฟีเจอร์ Speed, Jump, Noclip และระบบหาเซิร์ฟเวอร์</p>
-                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/YOUR_GITHUB/main/bloxfruits.lua', this)">
-                    📋 คัดลอกสคริปต์
-                </button>
-            </div>
-
-            <!-- การ์ดที่ 2: MM2 -->
-            <div class="card">
-                <div class="card-icon">🔪</div>
-                <span class="tag mm2">Murder Mystery 2</span>
-                <h3>Tanny MM2 Map Hub</h3>
-                <p>สคริปต์ ESP แสดงบทบาท (Murderer/Sheriff) พร้อมระบบวาร์ปหาเป้าหมายและแสดงระยะทาง</p>
-                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/YOUR_GITHUB/main/mm2.lua', this)">
-                    📋 คัดลอกสคริปต์
-                </button>
-            </div>
-
-            <!-- การ์ดที่ 3: Universal -->
-            <div class="card">
-                <div class="card-icon">🌐</div>
-                <span class="tag universal">Universal</span>
-                <h3>Tanny Universal Hub</h3>
-                <p>สคริปต์ที่ใช้ได้เกือบทุกเกม ปรับความเร็ว กระโดด Anti-AFK และ Server Hop</p>
-                <button class="btn-copy" onclick="copyScript('https://raw.githubusercontent.com/YOUR_GITHUB/main/universal.lua', this)">
-                    📋 คัดลอกสคริปต์
-                </button>
-            </div>
-
-            <!-- การ์ดที่ 4: Infinite Yield (แนะนำ) -->
-            <div class="card">
-                <div class="card-icon">♾️</div>
-                <span class="tag universal">แนะนำ</span>
-                <h3>Infinite Yield (IY)</h3>
-                <p>สคริปต์ Universal ที่ดีที่สุดและเสถียรที่สุด มีฟีเจอร์ให้เลือกใช้มากกว่า 100 รายการ</p>
-                <button class="btn-copy" onclick="copyScript('https://dpaste.com/4JJYXFC8V.txt', this)">
-                    📋 คัดลอกสคริปต์
-                </button>
-            </div>
-
+        <div class="grid" id="script-container">
+            <!-- การ์ดจะถูกสร้างที่นี่โดย JavaScript -->
         </div>
-    </main>
+    </div>
 
-    <footer>
-        <p>© 2026 Tanny Script Hub. สคริปต์ทั้งหมดใช้เพื่อการศึกษาเท่านั้น</p>
-    </footer>
+    <!-- View: Backend Admin -->
+    <div id="view-admin" class="view">
+        <!-- หน้า Login -->
+        <div id="login-section" class="login-box">
+            <h2 style="margin-bottom: 20px;">เข้าสู่ระบบแอดมิน</h2>
+            <input type="password" id="password-input" placeholder="รหัสผ่าน (ใส่: 311235)">
+            <button class="btn btn-primary" style="width: 100%;" onclick="login()">เข้าสู่ระบบ</button>
+        </div>
+
+        <!-- หน้าจัดการหลังบ้าน (ซ่อนไว้ก่อน) -->
+        <div id="admin-dashboard" style="display: none;">
+            <div class="admin-header">
+                <h2>จัดการสคริปต์</h2>
+                <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
+            </div>
+
+            <!-- ฟอร์มเพิ่มสคริปต์ -->
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">➕ เพิ่มสคริปต์ใหม่</h3>
+                <div class="form-group">
+                    <input type="text" id="new-name" placeholder="ชื่อสคริปต์ (เช่น Tanny Blox Fruits)">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new-desc" placeholder="คำอธิบายสั้นๆ">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new-url" placeholder="ลิงก์ Raw Script (เช่น https://raw.githubusercontent.com/...)">
+                </div>
+                <button class="btn btn-primary" onclick="addScript()">บันทึกสคริปต์</button>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">📋 รายการสคริปต์ทั้งหมด</h3>
+            <div class="admin-list" id="admin-list-container">
+                <!-- รายการจะถูกสร้างที่นี่ -->
+            </div>
+        </div>
+    </div>
+
+    <div id="alert">คัดลอกสำเร็จ!</div>
 
     <script>
-        function copyScript(url, btnElement) {
-            // สร้าง Loadstring Command
-            const loadstringCode = `loadstring(game:HttpGet("${url}"))()`;
+        // ==========================================
+        // ระบบฐานข้อมูลจำลอง (ใช้ LocalStorage)
+        // ==========================================
+        // ข้อมูลเริ่มต้น
+        const defaultScripts = [
+            { id: 1, name: "Tanny Universal Hub", desc: "สคริปต์ครอบจักรวาล Speed, Jump, Anti-AFK", url: "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source" },
+            { id: 2, name: "Tanny MM2 Map", desc: "ESP บทบาท และระบบวาร์ป", url: "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source" }
+        ];
+
+        function getScripts() {
+            let data = localStorage.getItem('tanny_scripts');
+            if (!data) {
+                localStorage.setItem('tanny_scripts', JSON.stringify(defaultScripts));
+                return defaultScripts;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveScripts(scripts) {
+            localStorage.setItem('tanny_scripts', JSON.stringify(scripts));
+            renderHome();
+            renderAdmin();
+        }
+
+        // ==========================================
+        // ระบบสลับหน้า (Routing)
+        // ==========================================
+        function switchView(view) {
+            document.getElementById('view-home').classList.remove('active');
+            document.getElementById('view-admin').classList.remove('active');
             
-            // คัดลอกลง Clipboard
-            navigator.clipboard.writeText(loadstringCode).then(() => {
-                // เปลี่ยนสถานะปุ่มเมื่อคัดลอกสำเร็จ
-                const originalText = btnElement.innerHTML;
-                btnElement.innerHTML = "✅ คัดลอกแล้ว!";
-                btnElement.classList.add("copied");
-                
-                // คืนค่าปุ่มกลับเป็นเหมือนเดิมใน 2 วินาที
-                setTimeout(() => {
-                    btnElement.innerHTML = originalText;
-                    btnElement.classList.remove("copied");
-                }, 2000);
-            }).catch(err => {
-                alert("เกิดข้อผิดพลาดในการคัดลอก กรุณาลองใหม่");
+            if (view === 'home') {
+                document.getElementById('view-home').classList.add('active');
+                document.getElementById('navBtn').innerText = "🔒 หลังบ้าน (Admin)";
+            } else {
+                document.getElementById('view-admin').classList.add('active');
+                document.getElementById('navBtn').innerText = "🏠 กลับหน้าแรก";
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // ==========================================
+        // ระบบ Frontend (หน้าแรก)
+        // ==========================================
+        function renderHome() {
+            const container = document.getElementById('script-container');
+            const scripts = getScripts();
+            container.innerHTML = '';
+
+            scripts.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${s.name}</h3>
+                    <p>${s.desc}</p>
+                    <button class="btn btn-primary" style="width:100%" onclick="copyScript('${s.url}')">📋 คัดลอกสคริปต์</button>
+                `;
+                container.appendChild(card);
             });
         }
+
+        function copyScript(url) {
+            const code = `loadstring(game:HttpGet("${url}"))()`;
+            navigator.clipboard.writeText(code).then(() => {
+                showAlert("✅ คัดลอกโค้ดเรียบร้อย!");
+            });
+        }
+
+        // ==========================================
+        // ระบบ Backend (หลังบ้าน)
+        // ==========================================
+        function login() {
+            const pass = document.getElementById('password-input').value;
+            if (pass === 'admin123') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                renderAdmin();
+            } else {
+                showAlert("❌ รหัสผ่านไม่ถูกต้อง!", true);
+            }
+        }
+
+        function logout() {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('password-input').value = '';
+        }
+
+        function addScript() {
+            const name = document.getElementById('new-name').value;
+            const desc = document.getElementById('new-desc').value;
+            const url = document.getElementById('new-url').value;
+
+            if (!name || !url) {
+                showAlert("⚠️ กรุณากรอกชื่อและลิงก์สคริปต์", true);
+                return;
+            }
+
+            const scripts = getScripts();
+            scripts.push({ id: Date.now(), name: name, desc: desc || "ไม่มีคำอธิบาย", url: url });
+            saveScripts(scripts);
+
+            // เคลียร์ฟอร์ม
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-desc').value = '';
+            document.getElementById('new-url').value = '';
+            showAlert("✅ เพิ่มสคริปต์สำเร็จ!");
+        }
+
+        function deleteScript(id) {
+            if(confirm("คุณแน่ใจหรือไม่ที่จะลบสคริปต์นี้?")) {
+                let scripts = getScripts();
+                scripts = scripts.filter(s => s.id !== id);
+                saveScripts(scripts);
+                showAlert("🗑️ ลบสคริปต์แล้ว");
+            }
+        }
+
+        function renderAdmin() {
+            const container = document.getElementById('admin-list-container');
+            const scripts = getScripts();
+            container.innerHTML = '';
+
+            if (scripts.length === 0) {
+                container.innerHTML = '<p style="color:gray">ยังไม่มีสคริปต์ในระบบ</p>';
+                return;
+            }
+
+            scripts.forEach(s => {
+                const item = document.createElement('div');
+                item.className = 'admin-item';
+                item.innerHTML = `
+                    <div>
+                        <h4>${s.name}</h4>
+                        <p>${s.desc}</p>
+                        <p style="color:#888; font-size:10px;">${s.url}</p>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteScript(${s.id})">ลบ</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // ==========================================
+        // Helper Function
+        // ==========================================
+        function showAlert(msg, isError = false) {
+            const alertBox = document.getElementById('alert');
+            alertBox.innerText = msg;
+            alertBox.style.background = isError ? 'var(--danger)' : 'var(--success)';
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+        }
+
+        // เริ่มต้นโหลดข้อมูล
+        renderHome();
     </script>
 </body>
-  </html>
+</html>
