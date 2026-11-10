@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanny Hub - Real-time Admin</title>
+    <title>Tanny Hub - Real-time Admin & Music</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -36,7 +36,7 @@
         input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); color: white; font-family: 'Kanit'; }
         
         /* Admin Tabs */
-        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: black; font-weight: bold; }
         .admin-section { display: none; }
@@ -47,6 +47,24 @@
         /* Real-time Status Dot */
         .live-dot { display: inline-block; width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; margin-right: 5px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        /* Floating Music Player */
+        #music-player {
+            position: fixed; bottom: 20px; left: 20px; z-index: 999;
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 50px;
+            padding: 10px 15px; display: none; align-items: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: 0.3s;
+        }
+        #music-player:hover { background: rgba(255,255,255,0.1); }
+        #music-player iframe { width: 0; height: 0; border: none; display: none; } /* ซ่อนวิดีโอ เหลือแค่เสียง */
+        
+        .music-btn {
+            background: var(--primary); border: none; width: 40px; height: 40px;
+            border-radius: 50%; color: black; font-size: 18px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .music-btn:hover { transform: scale(1.1); }
 
         #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 12px; color: white; font-weight: 600; display: none; z-index: 999; }
         #alert.show { display: block; }
@@ -84,6 +102,7 @@
         <div class="admin-tabs">
             <button class="tab-btn active" onclick="switchAdminTab('scripts', this)">📋 จัดการสคริปต์</button>
             <button class="tab-btn" onclick="switchAdminTab('users', this)">👥 ดูรายชื่อผู้ใช้ (Live)</button>
+            <button class="tab-btn" onclick="switchAdminTab('music', this)">🎵 ตั้งค่าเพลง</button>
         </div>
 
         <!-- แท็บจัดการสคริปต์ -->
@@ -102,10 +121,29 @@
         <div id="tab-users" class="admin-section">
             <div class="glass-box" style="margin-bottom: 20px;">
                 <h3><span class="live-dot"></span> รายชื่อผู้ใช้ในระบบ (อัปเดตเรียลไทม์)</h3>
-                <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">*หน้านี้จะอัปเดตอัตโนมัติทุก 1 วินาที</p>
             </div>
             <div id="admin-user-list"></div>
         </div>
+
+        <!-- แท็บตั้งค่าเพลง YouTube -->
+        <div id="tab-music" class="admin-section">
+            <div class="glass-box">
+                <h3 style="margin-bottom: 15px;">🎵 ใส่ลิงก์ YouTube เพื่อเล่นเป็นเพลงพื้นหลัง</h3>
+                <p style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">ตัวอย่าง: https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
+                <input type="text" id="music-url-input" placeholder="วางลิงก์ YouTube ที่นี่...">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" onclick="saveMusic()">บันทึกเพลง</button>
+                    <button class="btn btn-danger" onclick="removeMusic()">ลบเพลงออก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Music Player -->
+    <div id="music-player">
+        <button class="music-btn" id="music-toggle-btn" onclick="toggleMusic()">▶</button>
+        <span style="font-size: 14px; font-weight: 600; color: white;">BGM</span>
+        <iframe id="youtube-iframe" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
     <div id="alert">Alert!</div>
@@ -164,7 +202,8 @@
             btn.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
             
-            if(tabName === 'users') renderAdminUsers(); // อัปเดตทันทีเมื่อกดแท็บ
+            if(tabName === 'users') renderAdminUsers();
+            if(tabName === 'music') loadMusicSettings();
         }
 
         // ==========================================
@@ -188,17 +227,8 @@
 
             if (isRegisterMode) {
                 if (users.find(u => u.username === username)) { showAlert("❌ ชื่อนี้ถูกใช้แล้ว", true); return; }
-                
-                // เพิ่มผู้ใช้ใหม่พร้อมบันทึกเวลาที่สมัคร
-                users.push({ 
-                    id: Date.now(), 
-                    username: username, 
-                    password: password, 
-                    role: "user", 
-                    date: new Date().toLocaleString('th-TH') 
-                });
+                users.push({ id: Date.now(), username: username, password: password, role: "user", date: new Date().toLocaleString('th-TH') });
                 saveUsers(users);
-                
                 showAlert("✅ สมัครสำเร็จ! เข้าสู่ระบบได้เลย");
                 isRegisterMode = false;
                 toggleAuthMode();
@@ -256,14 +286,10 @@
             });
         }
 
-        // --- ระบบแสดงผู้ใช้แบบ Real-time ---
         function renderAdminUsers() {
             const container = document.getElementById('admin-user-list');
             const users = getUsers();
-            
-            // เรียงจากคนสมัครล่าสุดขึ้นก่อน
             users.sort((a, b) => b.id - a.id);
-
             container.innerHTML = '';
             users.forEach(u => {
                 const roleColor = u.role === 'admin' ? 'var(--primary)' : 'var(--text-muted)';
@@ -278,7 +304,6 @@
             });
         }
 
-        // ตั้งเวลาให้อัปเดตผู้ใช้ทุกๆ 1 วินาที (ถ้าอยู่ในแท็บผู้ใช้)
         setInterval(() => {
             if(document.getElementById('view-admin').classList.contains('active') && 
                document.getElementById('tab-users').classList.contains('active')) {
@@ -317,23 +342,52 @@
             navigator.clipboard.writeText(`loadstring(game:HttpGet("${url}"))()`).then(() => showAlert("✅ คัดลอกแล้ว!"));
         }
 
-        function showAlert(msg, isError = false) {
-            const alertBox = document.getElementById('alert');
-            alertBox.innerText = msg;
-            alertBox.style.background = isError ? 'var(--danger)' : 'var(--success)';
-            alertBox.classList.add('show');
-            setTimeout(() => alertBox.classList.remove('show'), 3000);
+        // ==========================================
+        // ระบบจัดการเพลง YouTube
+        // ==========================================
+        let ytPlayer;
+        let isMusicPlaying = false;
+
+        // ฟังก์ชันดึง ID วิดีโอจากลิงก์ YouTube
+        function getYouTubeID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // --- โหลดครั้งแรก ---
-        document.addEventListener("DOMContentLoaded", () => {
-            if(!getUsers().length) saveUsers(memoryUsers);
-            if(!getScripts().length) saveScripts(memoryScripts);
-            updateNavbar();
-            renderHome();
-            renderAdminScripts();
-            renderAdminUsers();
-        });
-    </script>
-</body>
-</html>
+        function saveMusic() {
+            const url = document.getElementById('music-url-input').value;
+            const videoId = getYouTubeID(url);
+            
+            if (videoId) {
+                localStorage.setItem('tanny_music_id', videoId);
+                showAlert("✅ บันทึกเพลงสำเร็จ!");
+                loadMusicPlayer();
+            } else {
+                showAlert("❌ ลิงก์ YouTube ไม่ถูกต้อง", true);
+            }
+        }
+
+        function removeMusic() {
+            localStorage.removeItem('tanny_music_id');
+            document.getElementById('music-player').style.display = 'none';
+            document.getElementById('music-url-input').value = '';
+            showAlert("🗑️ ลบเพลงแล้ว");
+        }
+
+        function loadMusicSettings() {
+            const videoId = localStorage.getItem('tanny_music_id');
+            if(videoId) {
+                document.getElementById('music-url-input').value = `https://www.youtube.com/watch?v=${videoId}`;
+            } else {
+                document.getElementById('music-url-input').value = '';
+            }
+        }
+
+        function loadMusicPlayer() {
+            const videoId = localStorage.getItem('tanny_music_id');
+            const playerDiv = document.getElementById('music-player');
+            const iframe = document.getElementById('youtube-iframe');
+            
+            if (videoId) {
+                playe
