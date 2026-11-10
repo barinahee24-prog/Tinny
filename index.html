@@ -3,273 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanny Script Hub</title>
+    <title>Tanny Hub - Real-time Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            --primary: #a78bfa;
-            --text-main: #ffffff;
-            --text-muted: #d1d5db;
-            --danger: #ef4444;
-            --success: #10b981;
+            --primary: #a78bfa; --text-main: #fff; --text-muted: #d1d5db;
+            --danger: #ef4444; --success: #10b981;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-        
-        body { 
-            color: var(--text-main); 
-            min-height: 100vh; 
-            overflow-x: hidden;
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b2e);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
+        body { color: var(--text-main); min-height: 100vh; background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b2e); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        nav { 
-            background: rgba(255, 255, 255, 0.03); padding: 15px 20px; display: flex; 
-            justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); 
-            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px);
-        }
+        nav { background: rgba(255, 255, 255, 0.03); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
+        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
         
-        .logo { font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; white-space: nowrap; }
-        
-        .nav-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end; }
-        
-        /* Language Selector */
-        .lang-select {
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            border: 1px solid var(--glass-border);
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-family: 'Kanit';
-            cursor: pointer;
-            outline: none;
-            max-width: 120px;
-        }
-        .lang-select option { background: #1a1a24; color: white; }
-
-        .nav-buttons { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        
-        .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: all 0.2s ease; backdrop-filter: blur(5px); white-space: nowrap; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--glass-border); cursor: pointer; font-weight: 600; font-family: 'Kanit'; transition: 0.2s; }
         .btn-primary { background: rgba(139, 92, 246, 0.3); color: white; }
         .btn-danger { background: rgba(239, 68, 68, 0.3); color: white; }
         .btn-success { background: rgba(16, 185, 129, 0.3); color: white; }
 
         .view { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .view.active { display: block; animation: fadeInUp 0.5s ease-out forwards; }
+        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .hero { text-align: center; padding: 40px 20px; }
-        .hero h1 { font-size: 36px; margin-bottom: 10px; }
-        .hero p { color: var(--text-muted); }
-        
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        
-        .card { 
-            background: var(--glass-bg); backdrop-filter: blur(12px); padding: 20px; 
-            border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
-        }
-        .card h3 { color: #e9d5ff; margin-bottom: 10px; }
-        .card p { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
-        
-        .glass-box { background: var(--glass-bg); backdrop-filter: blur(16px); padding: 30px; border-radius: 16px; border: 1px solid var(--glass-border); }
+        .card, .glass-box { background: var(--glass-bg); backdrop-filter: blur(12px); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); }
         .auth-box { max-width: 400px; margin: 50px auto; text-align: center; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, 0.2); color: white; font-family: 'Kanit'; }
         
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.2); color: white; font-family: 'Kanit'; }
-        input:focus { outline: none; border-color: var(--primary); }
-        
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
-        .admin-list { display: flex; flex-direction: column; gap: 10px; }
-        .admin-item { background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); }
+        /* Admin Tabs */
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: black; font-weight: bold; }
+        .admin-section { display: none; }
+        .admin-section.active { display: block; animation: fadeIn 0.4s ease; }
 
-        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 12px; color: white; font-weight: 600; display: none; z-index: 999; border: 1px solid rgba(255,255,255,0.3); }
+        .admin-item { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); margin-bottom: 10px; }
+        
+        /* Real-time Status Dot */
+        .live-dot { display: inline-block; width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; margin-right: 5px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        #alert { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 12px; color: white; font-weight: 600; display: none; z-index: 999; }
         #alert.show { display: block; }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Responsive */
-        @media (max-width: 600px) {
-            nav { flex-direction: column; gap: 10px; }
-            .nav-right { width: 100%; justify-content: space-between; }
-        }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo" onclick="switchView('home')">⚡ Tanny Script Hub</div>
-        
-        <div class="nav-right">
-            <!-- ตัวเลือกภาษา 6 ภาษา -->
-            <select class="lang-select" id="lang-select" onchange="changeLanguage(this.value)">
-                <option value="th">🇹🇭 ไทย</option>
-                <option value="en">🇬🇧 English</option>
-                <option value="zh">🇨🇳 中文</option>
-                <option value="ja">🇯🇵 日本語</option>
-                <option value="vi">🇻🇳 Tiếng Việt</option>
-                <option value="es">🇪🇸 Español</option>
-            </select>
-
-            <div class="nav-buttons" id="nav-buttons"></div>
-        </div>
+        <div class="logo" onclick="switchView('home')">⚡ Tanny Hub</div>
+        <div class="nav-right" id="nav-buttons"></div>
     </nav>
 
+    <!-- หน้าแรก -->
     <div id="view-home" class="view active">
         <div class="hero">
-            <h1 data-i18n="hero_title">ศูนย์รวมสคริปต์</h1>
-            <p data-i18n="hero_subtitle">กดคัดลอกเพื่อนำไปใช้ใน Executor</p>
+            <h1>ศูนย์รวมสคริปต์</h1>
+            <p>กดคัดลอกเพื่อนำไปใช้ใน Executor</p>
         </div>
         <div class="grid" id="script-container"></div>
     </div>
 
+    <!-- หน้าล็อกอิน -->
     <div id="view-auth" class="view">
         <div class="glass-box auth-box">
-            <h2 id="auth-title" style="margin-bottom: 20px;" data-i18n="auth_login">เข้าสู่ระบบ</h2>
-            <input type="text" id="auth-username" placeholder="ชื่อผู้ใช้ (Username)" data-i18n-ph="auth_username">
-            <input type="password" id="auth-password" placeholder="รหัสผ่าน (Password)" data-i18n-ph="auth_password">
-            
-            <button class="btn btn-primary" id="auth-submit-btn" style="width: 100%; margin-bottom: 15px;" onclick="handleAuthSubmit()" data-i18n="auth_login">เข้าสู่ระบบ</button>
-            
-            <p style="color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="toggleAuthMode()" id="auth-toggle-text" data-i18n="auth_no_account">
-                ยังไม่มีบัญชี? สมัครสมาชิกที่นี่
-            </p>
+            <h2 id="auth-title" style="margin-bottom: 20px;">เข้าสู่ระบบ</h2>
+            <input type="text" id="auth-username" placeholder="ชื่อผู้ใช้">
+            <input type="password" id="auth-password" placeholder="รหัสผ่าน">
+            <button class="btn btn-primary" id="auth-submit-btn" style="width: 100%; margin-bottom: 15px;" onclick="handleAuthSubmit()">เข้าสู่ระบบ</button>
+            <p style="color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="toggleAuthMode()" id="auth-toggle-text">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</p>
         </div>
     </div>
 
+    <!-- หน้าหลังบ้าน (Admin) -->
     <div id="view-admin" class="view">
-        <div class="admin-header">
-            <h2 data-i18n="admin_title">จัดการสคริปต์</h2>
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="switchAdminTab('scripts', this)">📋 จัดการสคริปต์</button>
+            <button class="tab-btn" onclick="switchAdminTab('users', this)">👥 ดูรายชื่อผู้ใช้ (Live)</button>
         </div>
-        <div class="glass-box" style="margin-bottom: 20px;">
-            <h3 style="margin-bottom: 15px;" data-i18n="admin_add_title">➕ เพิ่มสคริปต์ใหม่</h3>
-            <input type="text" id="new-name" placeholder="ชื่อสคริปต์" data-i18n-ph="admin_script_name">
-            <input type="text" id="new-desc" placeholder="คำอธิบาย" data-i18n-ph="admin_script_desc">
-            <input type="text" id="new-url" placeholder="ลิงก์ Raw Script" data-i18n-ph="admin_script_url">
-            <button class="btn btn-success" onclick="addScript()" data-i18n="admin_btn_save">บันทึกสคริปต์</button>
+
+        <!-- แท็บจัดการสคริปต์ -->
+        <div id="tab-scripts" class="admin-section active">
+            <div class="glass-box" style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px;">➕ เพิ่มสคริปต์ใหม่</h3>
+                <input type="text" id="new-name" placeholder="ชื่อสคริปต์">
+                <input type="text" id="new-desc" placeholder="คำอธิบาย">
+                <input type="text" id="new-url" placeholder="ลิงก์ Raw Script (https://...)">
+                <button class="btn btn-success" onclick="addScript()">บันทึกสคริปต์</button>
+            </div>
+            <div id="admin-script-list"></div>
         </div>
-        <div class="admin-list" id="admin-list-container"></div>
+
+        <!-- แท็บดูรายชื่อผู้ใช้ Real-time -->
+        <div id="tab-users" class="admin-section">
+            <div class="glass-box" style="margin-bottom: 20px;">
+                <h3><span class="live-dot"></span> รายชื่อผู้ใช้ในระบบ (อัปเดตเรียลไทม์)</h3>
+                <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">*หน้านี้จะอัปเดตอัตโนมัติทุก 1 วินาที</p>
+            </div>
+            <div id="admin-user-list"></div>
+        </div>
     </div>
 
     <div id="alert">Alert!</div>
 
     <script>
         // ==========================================
-        // 1. ระบบพจนานุกรมหลายภาษา (Multi-language)
+        // ระบบฐานข้อมูล (LocalStorage + Memory Fallback)
         // ==========================================
-        const translations = {
-            th: {
-                nav_admin: "🔒 หลังบ้าน", nav_login: "🔑 เข้าสู่ระบบ", nav_logout: "ออกจากระบบ",
-                hero_title: "ศูนย์รวมสคริปต์", hero_subtitle: "กดคัดลอกเพื่อนำไปใช้ใน Executor", btn_copy: "📋 คัดลอกสคริปต์",
-                auth_login: "เข้าสู่ระบบ", auth_register: "สมัครสมาชิก", auth_username: "ชื่อผู้ใช้", auth_password: "รหัสผ่าน",
-                auth_no_account: "ยังไม่มีบัญชี? สมัครสมาชิกที่นี่", auth_has_account: "มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่",
-                admin_title: "จัดการสคริปต์", admin_add_title: "➕ เพิ่มสคริปต์ใหม่", admin_script_name: "ชื่อสคริปต์", admin_script_desc: "คำอธิบาย", admin_script_url: "ลิงก์ Raw Script (https://...)", admin_btn_save: "บันทึกสคริปต์", admin_btn_delete: "ลบ",
-                alert_copied: "✅ คัดลอกโค้ดเรียบร้อย!", alert_welcome: "✅ ยินดีต้อนรับ", alert_logout: "👋 ออกจากระบบแล้ว",
-                alert_error_empty: "⚠️ กรุณากรอกข้อมูลให้ครบถ้วน", alert_error_user_exists: "❌ ชื่อผู้ใช้นี้ถูกใช้งานแล้ว", alert_error_login: "❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", alert_error_auth: "❌ คุณไม่มีสิทธิ์เข้าถึงหน้านี้",
-                alert_success_register: "✅ สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", alert_success_add: "✅ เพิ่มสคริปต์สำเร็จ!", alert_success_delete: "🗑️ ลบสคริปต์แล้ว", confirm_delete: "คุณแน่ใจหรือไม่ที่จะลบสคริปต์นี้?"
-            },
-            en: {
-                nav_admin: "🔒 Admin", nav_login: "🔑 Login", nav_logout: "Logout",
-                hero_title: "Script Hub", hero_subtitle: "Click to copy and use in Executor", btn_copy: "📋 Copy Script",
-                auth_login: "Login", auth_register: "Register", auth_username: "Username", auth_password: "Password",
-                auth_no_account: "Don't have an account? Register here", auth_has_account: "Already have an account? Login here",
-                admin_title: "Manage Scripts", admin_add_title: "➕ Add New Script", admin_script_name: "Script Name", admin_script_desc: "Description", admin_script_url: "Raw Script URL (https://...)", admin_btn_save: "Save Script", admin_btn_delete: "Delete",
-                alert_copied: "✅ Code copied successfully!", alert_welcome: "✅ Welcome", alert_logout: "👋 Logged out",
-                alert_error_empty: "⚠️ Please fill in all fields", alert_error_user_exists: "❌ Username already exists", alert_error_login: "❌ Invalid username or password", alert_error_auth: "❌ You don't have permission to access this page",
-                alert_success_register: "✅ Registration successful! Please login.", alert_success_add: "✅ Script added successfully!", alert_success_delete: "🗑️ Script deleted", confirm_delete: "Are you sure you want to delete this script?"
-            },
-            zh: {
-                nav_admin: "🔒 后台管理", nav_login: "🔑 登录", nav_logout: "登出",
-                hero_title: "脚本中心", hero_subtitle: "点击复制并在执行器中使用", btn_copy: "📋 复制脚本",
-                auth_login: "登录", auth_register: "注册", auth_username: "用户名", auth_password: "密码",
-                auth_no_account: "还没有账号？在此注册", auth_has_account: "已有账号？在此登录",
-                admin_title: "管理脚本", admin_add_title: "➕ 添加新脚本", admin_script_name: "脚本名称", admin_script_desc: "描述", admin_script_url: "原始脚本链接 (https://...)", admin_btn_save: "保存脚本", admin_btn_delete: "删除",
-                alert_copied: "✅ 代码复制成功！", alert_welcome: "✅ 欢迎", alert_logout: "👋 已登出",
-                alert_error_empty: "⚠️ 请填写所有字段", alert_error_user_exists: "❌ 用户名已存在", alert_error_login: "❌ 用户名或密码错误", alert_error_auth: "❌ 您没有权限访问此页面",
-                alert_success_register: "✅ 注册成功！请登录。", alert_success_add: "✅ 脚本添加成功！", alert_success_delete: "🗑️ 脚本已删除", confirm_delete: "您确定要删除此脚本吗？"
-            },
-            ja: {
-                nav_admin: "🔒 管理者", nav_login: "🔑 ログイン", nav_logout: "ログアウト",
-                hero_title: "スクリプトハブ", hero_subtitle: "コピーしてエグゼキューターで使用する", btn_copy: "📋 スクリプトをコピー",
-                auth_login: "ログイン", auth_register: "新規登録", auth_username: "ユーザー名", auth_password: "パスワード",
-                auth_no_account: "アカウントをお持ちでないですか？登録する", auth_has_account: "すでにアカウントをお持ちですか？ログインする",
-                admin_title: "スクリプト管理", admin_add_title: "➕ 新しいスクリプトを追加", admin_script_name: "スクリプト名", admin_script_desc: "説明", admin_script_url: "RawスクリプトURL (https://...)", admin_btn_save: "スクリプトを保存", admin_btn_delete: "削除",
-                alert_copied: "✅ コピーしました！", alert_welcome: "✅ ようこそ", alert_logout: "👋 ログアウトしました",
-                alert_error_empty: "⚠️ すべての項目を入力してください", alert_error_user_exists: "❌ ユーザー名は既に存在します", alert_error_login: "❌ ユーザー名またはパスワードが間違っています", alert_error_auth: "❌ このページにアクセスする権限がありません",
-                alert_success_register: "✅ 登録が完了しました！ログインしてください。", alert_success_add: "✅ 追加しました！", alert_success_delete: "🗑️ 削除しました", confirm_delete: "本当にこのスクリプトを削除しますか？"
-            },
-            vi: {
-                nav_admin: "🔒 Quản trị", nav_login: "🔑 Đăng nhập", nav_logout: "Đăng xuất",
-                hero_title: "Trung tâm Script", hero_subtitle: "Nhấp để sao chép và sử dụng trong Executor", btn_copy: "📋 Sao chép Script",
-                auth_login: "Đăng nhập", auth_register: "Đăng ký", auth_username: "Tên đăng nhập", auth_password: "Mật khẩu",
-                auth_no_account: "Chưa có tài khoản? Đăng ký tại đây", auth_has_account: "Đã có tài khoản? Đăng nhập tại đây",
-                admin_title: "Quản lý Script", admin_add_title: "➕ Thêm Script mới", admin_script_name: "Tên Script", admin_script_desc: "Mô tả", admin_script_url: "URL Raw Script (https://...)", admin_btn_save: "Lưu Script", admin_btn_delete: "Xóa",
-                alert_copied: "✅ Đã sao chép mã!", alert_welcome: "✅ Chào mừng", alert_logout: "👋 Đã đăng xuất",
-                alert_error_empty: "⚠️ Vui lòng điền tất cả các trường", alert_error_user_exists: "❌ Tên đăng nhập đã tồn tại", alert_error_login: "❌ Sai tên đăng nhập hoặc mật khẩu", alert_error_auth: "❌ Bạn không có quyền truy cập trang này",
-                alert_success_register: "✅ Đăng ký thành công! Vui lòng đăng nhập.", alert_success_add: "✅ Đã thêm Script!", alert_success_delete: "🗑️ Đã xóa Script", confirm_delete: "Bạn có chắc chắn muốn xóa Script này không?"
-            },
-            es: {
-                nav_admin: "🔒 Admin", nav_login: "🔑 Iniciar Sesión", nav_logout: "Cerrar Sesión",
-                hero_title: "Centro de Scripts", hero_subtitle: "Haz clic para copiar y usar en el Ejecutor", btn_copy: "📋 Copiar Script",
-                auth_login: "Iniciar Sesión", auth_register: "Registrarse", auth_username: "Nombre de usuario", auth_password: "Contraseña",
-                auth_no_account: "¿No tienes una cuenta? Regístrate aquí", auth_has_account: "¿Ya tienes una cuenta? Inicia sesión aquí",
-                admin_title: "Gestionar Scripts", admin_add_title: "➕ Añadir Nuevo Script", admin_script_name: "Nombre del Script", admin_script_desc: "Descripción", admin_script_url: "URL Raw del Script (https://...)", admin_btn_save: "Guardar Script", admin_btn_delete: "Eliminar",
-                alert_copied: "✅ ¡Código copiado con éxito!", alert_welcome: "✅ Bienvenido", alert_logout: "👋 Sesión cerrada",
-                alert_error_empty: "⚠️ Por favor, complete todos los campos", alert_error_user_exists: "❌ El nombre de usuario ya existe", alert_error_login: "❌ Usuario o contraseña incorrectos", alert_error_auth: "❌ No tienes permiso para acceder a esta página",
-                alert_success_register: "✅ ¡Registro exitoso! Por favor, inicia sesión.", alert_success_add: "✅ ¡Script añadido con éxito!", alert_success_delete: "🗑️ Script eliminado", confirm_delete: "¿Estás seguro de que quieres eliminar este script?"
-            }
-        };
-
-        // ตรวจจับภาษาของเบราว์เซอร์อัตโนมัติ (ถ้าไม่เคยเลือกไว้)
-        let currentLang = 'th';
-        try {
-            const savedLang = localStorage.getItem('tanny_lang');
-            if (savedLang && translations[savedLang]) {
-                currentLang = savedLang;
-            } else {
-                const browserLang = navigator.language.slice(0, 2);
-                if (translations[browserLang]) currentLang = browserLang;
-            }
-        } catch(e){}
-
-        function t(key) { return translations[currentLang][key] || key; }
-
-        function changeLanguage(lang) {
-            currentLang = lang;
-            try { localStorage.setItem('tanny_lang', lang); } catch(e){}
-            document.getElementById('lang-select').value = lang;
-            updateLanguageUI();
-        }
-
-        function updateLanguageUI() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (key) el.innerText = t(key);
-            });
-            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-                const key = el.getAttribute('data-i18n-ph');
-                if (key) el.placeholder = t(key);
-            });
-            updateNavbar();
-            renderHome();
-            renderAdmin();
-            updateAuthToggleText();
-        }
-
-        // ==========================================
-        // 2. ระบบฐานข้อมูลจำลอง (Memory Fallback)
-        // ==========================================
-        let memoryUsers = [{ username: "admin", password: "admin123", role: "admin" }];
+        const now = new Date().toLocaleString('th-TH');
+        let memoryUsers = [{ id: 1, username: "admin", password: "admin123", role: "admin", date: now }];
         let memoryScripts = [{ id: 1, name: "Tanny Universal Hub", desc: "Universal Script", url: "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source" }];
-        let memorySession = null;
 
         function getUsers() { try { return JSON.parse(localStorage.getItem('tanny_users')) || memoryUsers; } catch(e) { return memoryUsers; } }
         function saveUsers(u) { memoryUsers = u; try { localStorage.setItem('tanny_users', JSON.stringify(u)); } catch(e) {} }
@@ -277,29 +124,25 @@
         function getScripts() { try { return JSON.parse(localStorage.getItem('tanny_scripts')) || memoryScripts; } catch(e) { return memoryScripts; } }
         function saveScripts(s) { memoryScripts = s; try { localStorage.setItem('tanny_scripts', JSON.stringify(s)); } catch(e) {} }
 
-        function getCurrentUser() { try { return JSON.parse(localStorage.getItem('tanny_session')) || memorySession; } catch(e) { return memorySession; } }
-        function setSession(u) {
-            memorySession = u;
-            try { if(u) localStorage.setItem('tanny_session', JSON.stringify(u)); else localStorage.removeItem('tanny_session'); } catch(e) {}
-            updateNavbar();
-        }
+        function getCurrentUser() { try { return JSON.parse(sessionStorage.getItem('tanny_session')) || null; } catch(e) { return null; } }
+        function setSession(u) { try { if(u) sessionStorage.setItem('tanny_session', JSON.stringify(u)); else sessionStorage.removeItem('tanny_session'); } catch(e) {} updateNavbar(); }
 
         // ==========================================
-        // 3. ระบบ Navbar & Routing
+        // ระบบ Navbar & Routing
         // ==========================================
         function updateNavbar() {
             const navBtns = document.getElementById('nav-buttons');
             const user = getCurrentUser();
 
             if (user) {
-                let adminBtn = user.role === 'admin' ? `<button class="btn btn-success" onclick="switchView('admin')">${t('nav_admin')}</button>` : '';
+                let adminBtn = user.role === 'admin' ? `<button class="btn btn-success" onclick="switchView('admin')">🔒 หลังบ้าน</button>` : '';
                 navBtns.innerHTML = `
                     ${adminBtn}
-                    <span style="color:white; align-self:center; font-size:14px;">👤 ${user.username}</span>
-                    <button class="btn btn-danger" onclick="logout()">${t('nav_logout')}</button>
+                    <span style="color:white; align-self:center; margin-right:10px;">👤 ${user.username}</span>
+                    <button class="btn btn-danger" onclick="logout()">ออกจากระบบ</button>
                 `;
             } else {
-                navBtns.innerHTML = `<button class="btn btn-primary" onclick="switchView('auth')">${t('nav_login')}</button>`;
+                navBtns.innerHTML = `<button class="btn btn-primary" onclick="switchView('auth')">🔑 เข้าสู่ระบบ / สมัคร</button>`;
             }
         }
 
@@ -308,8 +151,189 @@
             if (viewName === 'admin') {
                 const user = getCurrentUser();
                 if (!user || user.role !== 'admin') {
-                    showAlert(t('alert_error_auth'), true);
+                    showAlert("❌ ไม่มีสิทธิ์เข้าถึง", true);
                     viewName = 'home';
                 }
             }
-            document.getElementById(`view
+            document.getElementById(`view-${viewName}`).classList.add('active');
+        }
+
+        function switchAdminTab(tabName, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            if(tabName === 'users') renderAdminUsers(); // อัปเดตทันทีเมื่อกดแท็บ
+        }
+
+        // ==========================================
+        // ระบบ Auth (Login/Register)
+        // ==========================================
+        let isRegisterMode = false;
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').innerText = isRegisterMode ? "สมัครสมาชิก" : "เข้าสู่ระบบ";
+            document.getElementById('auth-submit-btn').innerText = isRegisterMode ? "สมัครสมาชิก" : "เข้าสู่ระบบ";
+            document.getElementById('auth-toggle-text').innerText = isRegisterMode ? "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ" : "ยังไม่มีบัญชี? สมัครสมาชิกที่นี่";
+        }
+
+        function handleAuthSubmit() {
+            const username = document.getElementById('auth-username').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            if (!username || !password) { showAlert("⚠️ กรอกข้อมูลให้ครบ", true); return; }
+            const users = getUsers();
+
+            if (isRegisterMode) {
+                if (users.find(u => u.username === username)) { showAlert("❌ ชื่อนี้ถูกใช้แล้ว", true); return; }
+                
+                // เพิ่มผู้ใช้ใหม่พร้อมบันทึกเวลาที่สมัคร
+                users.push({ 
+                    id: Date.now(), 
+                    username: username, 
+                    password: password, 
+                    role: "user", 
+                    date: new Date().toLocaleString('th-TH') 
+                });
+                saveUsers(users);
+                
+                showAlert("✅ สมัครสำเร็จ! เข้าสู่ระบบได้เลย");
+                isRegisterMode = false;
+                toggleAuthMode();
+                document.getElementById('auth-password').value = '';
+            } else {
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    setSession(user);
+                    showAlert(`✅ ยินดีต้อนรับ ${user.username}`);
+                    document.getElementById('auth-username').value = '';
+                    document.getElementById('auth-password').value = '';
+                    switchView('home');
+                } else { showAlert("❌ ข้อมูลไม่ถูกต้อง", true); }
+            }
+        }
+
+        function logout() {
+            setSession(null);
+            showAlert("👋 ออกจากระบบแล้ว");
+            switchView('home');
+        }
+
+        // ==========================================
+        // ระบบจัดการสคริปต์ & ผู้ใช้
+        // ==========================================
+        function renderHome() {
+            const container = document.getElementById('script-container');
+            const scripts = getScripts();
+            container.innerHTML = '';
+            scripts.forEach(s => {
+                container.innerHTML += `
+                    <div class="card">
+                        <h3>${s.name}</h3>
+                        <p>${s.desc}</p>
+                        <button class="btn btn-primary" style="width:100%" onclick="copyScript('${s.url}')">📋 คัดลอกสคริปต์</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdminScripts() {
+            const container = document.getElementById('admin-script-list');
+            const scripts = getScripts();
+            container.innerHTML = '';
+            scripts.forEach(s => {
+                container.innerHTML += `
+                    <div class="admin-item">
+                        <div>
+                            <h4 style="color:white;">${s.name}</h4>
+                            <p style="color:var(--text-muted); font-size:12px;">${s.desc}</p>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteScript(${s.id})">ลบ</button>
+                    </div>
+                `;
+            });
+        }
+
+        // --- ระบบแสดงผู้ใช้แบบ Real-time ---
+        function renderAdminUsers() {
+            const container = document.getElementById('admin-user-list');
+            const users = getUsers();
+            
+            // เรียงจากคนสมัครล่าสุดขึ้นก่อน
+            users.sort((a, b) => b.id - a.id);
+
+            container.innerHTML = '';
+            users.forEach(u => {
+                const roleColor = u.role === 'admin' ? 'var(--primary)' : 'var(--text-muted)';
+                container.innerHTML += `
+                    <div class="admin-item">
+                        <div>
+                            <h4 style="color:white;">👤 ${u.username} <span style="font-size:12px; color:${roleColor};">[${u.role}]</span></h4>
+                            <p style="color:var(--text-muted); font-size:12px;">📅 สมัครเมื่อ: ${u.date}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ตั้งเวลาให้อัปเดตผู้ใช้ทุกๆ 1 วินาที (ถ้าอยู่ในแท็บผู้ใช้)
+        setInterval(() => {
+            if(document.getElementById('view-admin').classList.contains('active') && 
+               document.getElementById('tab-users').classList.contains('active')) {
+                renderAdminUsers();
+            }
+        }, 1000);
+
+        function addScript() {
+            const name = document.getElementById('new-name').value;
+            const desc = document.getElementById('new-desc').value;
+            const url = document.getElementById('new-url').value;
+            if (!name || !url) { showAlert("⚠️ กรอกชื่อและลิงก์", true); return; }
+            
+            const scripts = getScripts();
+            scripts.push({ id: Date.now(), name: name, desc: desc || "-", url: url });
+            saveScripts(scripts);
+            
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-desc').value = '';
+            document.getElementById('new-url').value = '';
+            showAlert("✅ เพิ่มสำเร็จ!");
+            renderHome();
+            renderAdminScripts();
+        }
+
+        function deleteScript(id) {
+            if(confirm("ลบสคริปต์นี้?")) {
+                saveScripts(getScripts().filter(s => s.id !== id));
+                showAlert("🗑️ ลบแล้ว");
+                renderHome();
+                renderAdminScripts();
+            }
+        }
+
+        function copyScript(url) {
+            navigator.clipboard.writeText(`loadstring(game:HttpGet("${url}"))()`).then(() => showAlert("✅ คัดลอกแล้ว!"));
+        }
+
+        function showAlert(msg, isError = false) {
+            const alertBox = document.getElementById('alert');
+            alertBox.innerText = msg;
+            alertBox.style.background = isError ? 'var(--danger)' : 'var(--success)';
+            alertBox.classList.add('show');
+            setTimeout(() => alertBox.classList.remove('show'), 3000);
+        }
+
+        // --- โหลดครั้งแรก ---
+        document.addEventListener("DOMContentLoaded", () => {
+            if(!getUsers().length) saveUsers(memoryUsers);
+            if(!getScripts().length) saveScripts(memoryScripts);
+            updateNavbar();
+            renderHome();
+            renderAdminScripts();
+            renderAdminUsers();
+        });
+    </script>
+</body>
+</html>
