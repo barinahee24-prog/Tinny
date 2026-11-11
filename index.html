@@ -1,361 +1,477 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Shorts Feed (API Version) 📡</title>
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff; overflow: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Music Player & Admin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
 
-    .feed { height: 100dvh; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
-    .feed::-webkit-scrollbar { display: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+        
+        body {
+            background-color: #121212;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-    .short-item { position: relative; height: 100dvh; width: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; justify-content: center; align-items: center; background: #000; }
-    .short-item iframe { width: 100%; height: 100%; max-width: calc(100dvh * 9 / 16); border: none; pointer-events: auto; }
+        /* ===== Header & Nav ===== */
+        header {
+            padding: 15px 20px;
+            background: linear-gradient(to bottom, #1DB95444, transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        header h1 { font-size: 20px; font-weight: 600; background: -webkit-linear-gradient(#1DB954, #1ed760); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .nav-btn {
+            background: #282828; color: #fff; border: 1px solid #444;
+            padding: 8px 16px; border-radius: 20px; cursor: pointer;
+            font-size: 14px; transition: 0.2s;
+        }
+        .nav-btn:hover { background: #333; border-color: #1DB954; color: #1DB954; }
 
-    .overlay { position: absolute; inset: 0; pointer-events: none; max-width: calc(100dvh * 9 / 16); margin: 0 auto; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%); }
-    .info { pointer-events: auto; max-width: 75%; margin-bottom: 10px; }
-    .channel { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ff0050, #ff9050); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; border: 2px solid #fff; }
-    .channel-name { font-weight: 600; font-size: 14px; }
-    .subscribe-btn { pointer-events: auto; background: #ff0050; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; margin-left: 8px; transition: transform 0.2s; }
-    .subscribe-btn:active { transform: scale(0.95); }
-    .subscribe-btn.subscribed { background: #333; }
-    .title { font-size: 14px; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        /* ===== Views (Player / Admin) ===== */
+        .view { flex: 1; overflow-y: auto; display: none; padding-bottom: 120px; }
+        .view.active { display: block; }
+        
+        /* ===== Playlist View ===== */
+        .playlist-container { padding: 10px 20px; }
+        .playlist-container::-webkit-scrollbar { width: 6px; }
+        .playlist-container::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
-    .actions { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; pointer-events: auto; }
-    .action-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: #fff; cursor: pointer; font-size: 11px; transition: transform 0.2s; }
-    .action-btn:active { transform: scale(0.9); }
-    .action-icon { width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; font-size: 20px; transition: background 0.2s; }
-    .action-btn.liked .action-icon { background: #ff0050; }
-    .action-btn.liked .action-icon svg { fill: #fff; }
+        .song-item {
+            display: flex; align-items: center;
+            padding: 12px; border-radius: 12px;
+            cursor: pointer; transition: background 0.3s; margin-bottom: 8px;
+        }
+        .song-item:hover { background: #2a2a2a; }
+        .song-item.active { background: #1DB95422; border: 1px solid #1DB954; }
+        .song-item.active .song-title { color: #1DB954; }
 
-    .top-bar { position: fixed; top: 0; left: 0; right: 0; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); }
-    .top-bar h1 { font-size: 18px; font-weight: 700; background: linear-gradient(90deg, #ff0050, #ff9050); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .top-bar .counter { font-size: 12px; opacity: 0.7; pointer-events: auto; }
+        .song-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 15px; background: #333; }
+        .song-info { flex: 1; overflow: hidden; }
+        .song-title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-artist { font-size: 12px; color: #b3b3b3; }
+        .play-icon { color: #b3b3b3; font-size: 18px; margin-left: 10px; }
 
-    .loading { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
-    .loading.hidden { opacity: 0; pointer-events: none; }
-    .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #ff0050; border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading p { margin-top: 16px; font-size: 14px; opacity: 0.7; text-align: center; padding: 0 20px; }
+        /* ===== Admin View (ฟอร์มเพิ่มเพลง) ===== */
+        .admin-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .admin-title { font-size: 22px; margin-bottom: 20px; color: #1DB954; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 5px; color: #b3b3b3; }
+        .form-group input {
+            width: 100%; padding: 10px; border-radius: 8px;
+            border: 1px solid #444; background: #222; color: #fff;
+            font-size: 14px; outline: none;
+        }
+        .form-group input:focus { border-color: #1DB954; }
+        
+        .btn-submit {
+            width: 100%; padding: 12px; background: #1DB954; color: #fff;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; margin-top: 10px; transition: 0.2s;
+        }
+        .btn-submit:hover { background: #1ed760; transform: scale(1.02); }
 
-    .mute-indicator { position: fixed; top: 60px; right: 16px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 6px; z-index: 100; cursor: pointer; transition: opacity 0.3s; }
-    .mute-indicator:hover { opacity: 0.8; }
+        /* Admin Song List */
+        .admin-list { margin-top: 30px; }
+        .admin-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #222; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px;
+        }
+        .admin-item-info { flex: 1; overflow: hidden; }
+        .admin-item-title { font-size: 14px; font-weight: 600; }
+        .admin-item-artist { font-size: 12px; color: #b3b3b3; }
+        .btn-delete {
+            background: #ff4444; color: #fff; border: none;
+            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .btn-delete:hover { background: #ff0000; }
 
-    .error-banner { position: fixed; top: 110px; left: 16px; right: 16px; background: rgba(200, 0, 0, 0.9); color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; z-index: 1000; text-align: center; display: none; }
+        /* ===== Bottom Player Bar ===== */
+        .player-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #181818; border-top: 1px solid #282828;
+            padding: 15px 20px; display: flex; flex-direction: column; gap: 12px; z-index: 100;
+        }
+        .progress-container { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #b3b3b3; }
+        
+        input[type="range"] {
+            -webkit-appearance: none; width: 100%; height: 4px;
+            background: #404040; border-radius: 2px; outline: none; cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 12px; height: 12px;
+            border-radius: 50%; background: #fff;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { background: #1DB954; }
 
-    @media (min-width: 768px) { .short-item { background: #0a0a0a; } .short-item iframe { border-radius: 16px; } .top-bar h1 { font-size: 22px; } }
-</style>
+        .player-controls { display: flex; align-items: center; justify-content: space-between; }
+        .current-song { display: flex; align-items: center; gap: 12px; width: 30%; min-width: 150px; }
+        .current-song img { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; }
+        .current-song-info { display: flex; flex-direction: column; overflow: hidden; }
+        .current-song-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .current-song-artist { font-size: 12px; color: #b3b3b3; }
+
+        .buttons { display: flex; align-items: center; gap: 20px; }
+        .btn-control { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .btn-control:hover { color: #1DB954; transform: scale(1.1); }
+        .btn-play {
+            background: #fff; color: #000; width: 45px; height: 45px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .btn-play:hover { background: #1DB954; color: #fff; }
+
+        .volume-control { display: flex; align-items: center; gap: 8px; width: 20%; justify-content: flex-end; }
+        .volume-control input { width: 80px; }
+
+        @media (max-width: 600px) {
+            .current-song-info { display: none; }
+            .volume-control { display: none; }
+            .player-controls { justify-content: center; gap: 30px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p id="loadingText">กำลังดึงข้อมูล Shorts จาก YouTube API...</p>
-</div>
+    <!-- Header -->
+    <header>
+        <h1>🎧 Music App</h1>
+        <button class="nav-btn" id="navToggleBtn" onclick="toggleView()">⚙️ จัดการเพลง</button>
+    </header>
 
-<div class="top-bar">
-    <h1>⚡ Shorts API Feed</h1>
-    <span class="counter" id="counter">0 / 0</span>
-</div>
+    <!-- View 1: Player (หน้าฟังเพลง) -->
+    <div class="view active" id="playerView">
+        <div class="playlist-container" id="playlist">
+            <!-- รายการเพลงจะถูกสร้างที่นี่ -->
+        </div>
+    </div>
 
-<div class="mute-indicator" id="muteIndicator" onclick="toggleMute()">
-    <span id="muteIcon">🔇</span>
-    <span id="muteText">ปิดเสียง</span>
-</div>
+    <!-- View 2: Admin (หลังบ้าน) -->
+    <div class="view" id="adminView">
+        <div class="admin-container">
+            <h2 class="admin-title">⚙️ จัดการรายการเพลง</h2>
+            
+            <!-- ฟอร์มเพิ่มเพลง -->
+            <div class="form-group">
+                <label>ชื่อเพลง</label>
+                <input type="text" id="addTitle" placeholder="เช่น เพลงรักในฤดูร้อน">
+            </div>
+            <div class="form-group">
+                <label>ชื่อศิลปิน</label>
+                <input type="text" id="addArtist" placeholder="เช่น ศิลปิน A">
+            </div>
+            <div class="form-group">
+                <label>ลิงก์รูปหน้าปก (URL)</label>
+                <input type="text" id="addCover" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="form-group">
+                <label>ลิงก์ไฟล์เสียง MP3 (URL)</label>
+                <input type="text" id="addUrl" placeholder="https://example.com/song.mp3">
+            </div>
+            <button class="btn-submit" onclick="addNewSong()">➕ เพิ่มเพลง</button>
 
-<div class="error-banner" id="errorBanner"></div>
+            <!-- ลิสต์เพลงปัจจุบัน -->
+            <div class="admin-list">
+                <h3 style="margin-bottom: 15px; font-size: 16px;">เพลงทั้งหมด</h3>
+                <div id="adminSongList"></div>
+            </div>
+        </div>
+    </div>
 
-<div class="feed" id="feed"></div>
+    <!-- Bottom Player Bar -->
+    <div class="player-bar">
+        <div class="progress-container">
+            <span id="currentTime">0:00</span>
+            <input type="range" id="progressBar" value="0" min="0" max="100">
+            <span id="duration">0:00</span>
+        </div>
 
-<script>
-// ============================================================
-// ⚙️ CONFIG — ใส่ค่าของคุณที่นี่
-// ============================================================
-const CONFIG = {
-    API_KEY: 'AIzaSyA33m9Zd6IcLFRvu85rRUXNbEhu9iyn398/',   // ← ใส่ API Key ของคุณ
-    CHANNEL_ID: 'h89Upnq-UYg',       // ← ใส่ Channel ID ของคุณ
-    MAX_RESULTS: 100,                        // จำนวน Shorts สูงสุดที่ต้องการ
-    SEARCH_QUERY: ''                        // เว้นว่างไว้เพื่อดึงทั้งหมดของช่อง
-};
-
-// ============================================================
-// 🎬 MAIN FLOW
-// ============================================================
-const feedEl = document.getElementById('feed');
-const counterEl = document.getElementById('counter');
-const loadingEl = document.getElementById('loading');
-const loadingText = document.getElementById('loadingText');
-const errorBanner = document.getElementById('errorBanner');
-
-let currentIndex = 0;
-let isMuted = true;
-let shortsData = [];
-
-async function init() {
-    try {
-        if (CONFIG.API_KEY === 'YOUR_YOUTUBE_DATA_API_KEY') {
-            throw new Error('กรุณาใส่ API_KEY ของคุณในส่วน CONFIG');
-        }
-        if (CONFIG.CHANNEL_ID === 'UCxxxxxxxxxxxxxxxx') {
-            throw new Error('กรุณาใส่ CHANNEL_ID ของคุณในส่วน CONFIG');
-        }
-
-        loadingText.textContent = 'กำลังค้นหาวิดีโอ...';
-        shortsData = await fetchShorts();
-
-        if (shortsData.length === 0) {
-            throw new Error('ไม่พบ Shorts ในช่องนี้ (อาจเป็นเพราะคลิปทั้งหมดยาวเกิน 60 วินาที หรือช่องยังไม่มี Shorts)');
-        }
-
-        loadingText.textContent = `พบ ${shortsData.length} Shorts กำลังสร้างฟีด...`;
-        buildFeed(shortsData);
-        startObserving();
-
-    } catch (err) {
-        console.error(err);
-        loadingText.textContent = 'เกิดข้อผิดพลาด';
-        errorBanner.style.display = 'block';
-        errorBanner.textContent = '❌ ' + err.message;
-        loadingEl.classList.add('hidden');
-        setTimeout(() => loadingEl.style.display = 'none', 500);
-    }
-}
-
-// ============================================================
-// 📡 YOUTUBE DATA API — ดึงและกรอง Shorts
-// ============================================================
-async function fetchShorts() {
-    // 1. ค้นหาวิดีโอในช่อง (videoDuration=short = < 4 นาที)
-    //    ใช้ videoDimension=2d เพื่อตัดวิดีโอ 3D ออก
-    const searchParams = new URLSearchParams({
-        key: CONFIG.API_KEY,
-        channelId: CONFIG.CHANNEL_ID,
-        part: 'snippet',
-        type: 'video',
-        order: 'date',
-        videoDuration: 'short',
-        videoDimension: '2d',
-        maxResults: Math.min(CONFIG.MAX_RESULTS, 50).toString()
-    });
-
-    if (CONFIG.SEARCH_QUERY) {
-        searchParams.set('q', CONFIG.SEARCH_QUERY);
-    }
-
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?${searchParams}`;
-    const searchRes = await fetch(searchUrl);
-
-    if (!searchRes.ok) {
-        const err = await searchRes.json();
-        throw new Error(getApiErrorMessage(err));
-    }
-
-    const searchData = await searchRes.json();
-    if (!searchData.items || searchData.items.length === 0) {
-        return [];
-    }
-
-    const videoIds = searchData.items.map(item => item.id.videoId).join(',');
-
-    // 2. ดึงรายละเอียดเพื่อตรวจสอบความยาวจริง (ต้อง ≤ 60 วินาที)
-    const detailsParams = new URLSearchParams({
-        key: CONFIG.API_KEY,
-        id: videoIds,
-        part: 'contentDetails,snippet,statistics'
-    });
-
-    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?${detailsParams}`;
-    const detailsRes = await fetch(detailsUrl);
-
-    if (!detailsRes.ok) {
-        const err = await detailsRes.json();
-        throw new Error(getApiErrorMessage(err));
-    }
-
-    const detailsData = await detailsRes.json();
-
-    // 3. กรองเฉพาะ Shorts (ความยาว ≤ 60 วินาที)
-    const shorts = detailsData.items.filter(item => {
-        const durationSec = parseISODuration(item.contentDetails.duration);
-        return durationSec > 0 && durationSec <= 60;
-    }).map(item => ({
-        videoId: item.id,
-        channel: item.snippet.channelTitle,
-        avatar: item.snippet.channelTitle.charAt(0).toUpperCase(),
-        title: item.snippet.title,
-        likes: parseInt(item.statistics?.likeCount || 0),
-        viewCount: parseInt(item.statistics?.viewCount || 0)
-    }));
-
-    return shorts;
-}
-
-function parseISODuration(iso) {
-    // แปลง PT1M30S → 90 วินาที
-    const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-    if (!match) return 0;
-    const h = parseInt(match[1] || 0);
-    const m = parseInt(match[2] || 0);
-    const s = parseInt(match[3] || 0);
-    return h * 3600 + m * 60 + s;
-}
-
-function getApiErrorMessage(err) {
-    const reason = err?.error?.errors?.[0]?.reason;
-    const map = {
-        'quotaExceeded': 'โควต้า API หมดแล้ว (search.list มีขีดจำกัด 100 ครั้ง/วัน)',
-        'keyInvalid': 'API Key ไม่ถูกต้อง',
-        'channelNotFound': 'ไม่พบช่องที่ระบุ',
-        'forbidden': 'การเข้าถึงถูกปฏิเสธ (อาจต้องเปิดใช้ YouTube Data API v3 ใน Cloud Console)'
-    };
-    return map[reason] || err?.error?.message || 'เกิดข้อผิดพลาดในการเรียก API';
-}
-
-// ============================================================
-// 🎬 BUILD FEED (เหมือนเวอร์ชันก่อนหน้า)
-// ============================================================
-function buildFeed(data) {
-    feedEl.innerHTML = '';
-    data.forEach((short, index) => {
-        const item = document.createElement('div');
-        item.className = 'short-item';
-        item.dataset.index = index;
-        item.dataset.videoId = short.videoId;
-
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${short.videoId}?` + new URLSearchParams({
-            autoplay: 1, mute: 1, controls: 1, rel: 0, modestbranding: 1,
-            playsinline: 1, loop: 1, playlist: short.videoId, enablejsapi: 1,
-            origin: window.location.origin
-        }).toString();
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        iframe.allowFullscreen = true;
-        iframe.loading = 'lazy';
-        iframe.title = short.title;
-
-        const overlay = document.createElement('div');
-        overlay.className = 'overlay';
-        overlay.innerHTML = `
-            <div class="info">
-                <div class="channel">
-                    <div class="avatar">${short.avatar}</div>
-                    <span class="channel-name">@${short.channel.toLowerCase().replace(/\s+/g, '')}</span>
-                    <button class="subscribe-btn" onclick="event.stopPropagation(); this.classList.toggle('subscribed'); this.textContent = this.classList.contains('subscribed') ? 'ติดตามแล้ว' : 'ติดตาม';">ติดตาม</button>
+        <div class="player-controls">
+            <div class="current-song">
+                <img id="currentCover" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=100&h=100&fit=crop" alt="Cover">
+                <div class="current-song-info">
+                    <div class="current-song-title" id="currentTitle">เลือกเพลงเพื่อเล่น</div>
+                    <div class="current-song-artist" id="currentArtist">-</div>
                 </div>
-                <div class="title">${escapeHtml(short.title)}</div>
             </div>
-            <div class="actions">
-                <button class="action-btn like-btn" onclick="event.stopPropagation(); toggleLike(this);">
-                    <div class="action-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                    </div>
-                    <span class="like-count">${formatNumber(short.likes)}</span>
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation();">
-                    <div class="action-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                    </div>
-                    <span>ความคิดเห็น</span>
-                </button>
-                <button class="action-btn" onclick="event.stopPropagation(); shareShort('${short.videoId}');">
-                    <div class="action-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                        </svg>
-                    </div>
-                    <span>แชร์</span>
-                </button>
+
+            <div class="buttons">
+                <button class="btn-control" onclick="prevSong()">⏮</button>
+                <button class="btn-control btn-play" id="playBtn" onclick="togglePlay()">▶</button>
+                <button class="btn-control" onclick="nextSong()">⏭</button>
             </div>
-        `;
 
-        item.appendChild(iframe);
-        item.appendChild(overlay);
-        feedEl.appendChild(item);
-    });
-    counterEl.textContent = `1 / ${data.length}`;
-}
+            <div class="volume-control">
+                <span>🔊</span>
+                <input type="range" id="volumeBar" min="0" max="1" step="0.1" value="0.7">
+            </div>
+        </div>
+    </div>
 
-// ============================================================
-// 🎯 OBSERVER / UTILITIES (เหมือนเวอร์ชันก่อนหน้า)
-// ============================================================
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        const iframe = entry.target.querySelector('iframe');
-        if (!iframe || !iframe.contentWindow) return;
-        const index = parseInt(entry.target.dataset.index);
-        const command = entry.isIntersecting ? 'playVideo' : 'pauseVideo';
-        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: command, args: [] }), '*');
-        if (entry.isIntersecting) { currentIndex = index; updateCounter(); }
-    });
-}, { threshold: 0.6, root: feedEl });
+    <audio id="audioPlayer"></audio>
 
-function startObserving() {
-    document.querySelectorAll('.short-item').forEach(item => observer.observe(item));
-    loadingEl.classList.add('hidden');
-    setTimeout(() => loadingEl.style.display = 'none', 500);
-}
+    <script>
+        // ==========================================
+        // 🔐 1. ระบบหลังบ้าน & LocalStorage
+        // ==========================================
+        const ADMIN_PASSWORD = "311235"; // รหัสผ่านเข้าหลังบ้าน
+        let isAdminLoggedIn = false;
+        
+        // เพลงเริ่มต้น (ถ้าในเครื่องยังไม่เคยมีข้อมูล)
+        const defaultSongs = [
+            {
+                title: "SoundHelix Song 1",
+                artist: "T. Schürger",
+                cover: "https://images.unsplash.com/photo-1493225457124-a1a2a5f5646f?w=200&h=200&fit=crop",
+                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+            },
+            {
+                title: "SoundHelix Song 2",
+                artist: "T. Schürger",
+                cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop",
+                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+            }
+        ];
 
-function updateCounter() { counterEl.textContent = `${currentIndex + 1} / ${shortsData.length}`; }
-function formatNumber(num) { if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M'; if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K'; return num.toString(); }
-function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+        // ดึงข้อมูลจาก LocalStorage (ถ้าไม่มีให้ใช้ค่าเริ่มต้น)
+        let songs = JSON.parse(localStorage.getItem('myMusicPlaylist')) || defaultSongs;
 
-function toggleLike(btn) {
-    btn.classList.toggle('liked');
-    const svg = btn.querySelector('svg');
-    svg.setAttribute('fill', btn.classList.contains('liked') ? 'currentColor' : 'none');
-}
+        // ฟังก์ชันบันทึกข้อมูลลง LocalStorage
+        function saveToStorage() {
+            localStorage.setItem('myMusicPlaylist', JSON.stringify(songs));
+        }
 
-function toggleMute() {
-    isMuted = !isMuted;
-    document.getElementById('muteIcon').textContent = isMuted ? '🔇' : '🔊';
-    document.getElementById('muteText').textContent = isMuted ? 'ปิดเสียง' : 'เปิดเสียง';
-    document.querySelectorAll('.short-item iframe').forEach(iframe => {
-        if (!iframe.contentWindow) return;
-        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: isMuted ? 'mute' : 'unMute', args: [] }), '*');
-    });
-}
+        // สลับหน้าจอ (Player <-> Admin)
+        function toggleView() {
+            const playerView = document.getElementById('playerView');
+            const adminView = document.getElementById('adminView');
+            const navBtn = document.getElementById('navToggleBtn');
 
-function shareShort(videoId) {
-    const url = `https://youtube.com/shorts/${videoId}`;
-    if (navigator.share) { navigator.share({ title: 'ดู Shorts นี้สิ!', url }).catch(() => {}); }
-    else { navigator.clipboard.writeText(url).then(() => showToast('คัดลอกลิงก์แล้ว!')); }
-}
+            if (adminView.classList.contains('active')) {
+                // กลับไปหน้า Player
+                adminView.classList.remove('active');
+                playerView.classList.add('active');
+                navBtn.textContent = '⚙️ จัดการเพลง';
+            } else {
+                // จะเข้าหน้า Admin ต้องใส่รหัส
+                if (!isAdminLoggedIn) {
+                    const pass = prompt("🔒 กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบหลังบ้าน:");
+                    if (pass === ADMIN_PASSWORD) {
+                        isAdminLoggedIn = true;
+                    } else if (pass !== null) {
+                        alert("❌ รหัสผ่านไม่ถูกต้อง!");
+                        return;
+                    } else {
+                        return; // กด Cancel
+                    }
+                }
+                // เข้าหน้า Admin
+                playerView.classList.remove('active');
+                adminView.classList.add('active');
+                navBtn.textContent = '🎵 กลับไปหน้าฟังเพลง';
+                renderAdminList(); // อัปเดตรายการในหลังบ้าน
+            }
+        }
 
-function showToast(msg) {
-    const toast = document.createElement('div');
-    toast.textContent = msg;
-    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:1000;animation:fadeInUp 0.3s ease;';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-}
+        // เพิ่มเพลงใหม่
+        function addNewSong() {
+            const title = document.getElementById('addTitle').value.trim();
+            const artist = document.getElementById('addArtist').value.trim();
+            const cover = document.getElementById('addCover').value.trim() || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop';
+            const url = document.getElementById('addUrl').value.trim();
 
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        const items = document.querySelectorAll('.short-item');
-        const targetIndex = e.key === 'ArrowDown' ? Math.min(currentIndex + 1, items.length - 1) : Math.max(currentIndex - 1, 0);
-        items[targetIndex]?.scrollIntoView({ behavior: 'smooth' });
-    }
-    if (e.key === 'm' || e.key === 'M') toggleMute();
-});
+            if (!title || !url) {
+                alert("⚠️ กรุณากรอกชื่อเพลงและลิงก์ไฟล์ MP3");
+                return;
+            }
 
-// ============================================================
-// 🚀 START
-// ============================================================
-init();
-</script>
+            // เพิ่มลงอาร์เรย์
+            songs.push({ title, artist: artist || 'Unknown Artist', cover, url });
+            saveToStorage();
+            
+            // ล้างฟอร์ม
+            document.getElementById('addTitle').value = '';
+            document.getElementById('addArtist').value = '';
+            document.getElementById('addCover').value = '';
+            document.getElementById('addUrl').value = '';
 
-<style>
-@keyframes fadeInUp { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
-</style>
+            alert("✅ เพิ่มเพลงสำเร็จ!");
+            renderAdminList(); // อัปเดตหลังบ้าน
+            renderPlaylist();  // อัปเดตหน้าฟังเพลง
+        }
 
+        // ลบเพลง
+        function deleteSong(index) {
+            if (confirm(`คุณต้องการลบเพลง "${songs[index].title}" ใช่หรือไม่?`)) {
+                songs.splice(index, 1);
+                saveToStorage();
+                renderAdminList();
+                renderPlaylist();
+                
+                // ถ้าลบเพลงที่กำลังเล่นอยู่ ให้หยุดเล่น
+                if (currentSongIndex === index) {
+                    audio.pause();
+                    isPlaying = false;
+                    playBtn.textContent = '▶';
+                    currentTitle.textContent = 'เลือกเพลงเพื่อเล่น';
+                    currentArtist.textContent = '-';
+                }
+            }
+        }
+
+        // แสดงรายการเพลงในหลังบ้าน
+        function renderAdminList() {
+            const list = document.getElementById('adminSongList');
+            list.innerHTML = '';
+            songs.forEach((song, index) => {
+                const div = document.createElement('div');
+                div.className = 'admin-item';
+                div.innerHTML = `
+                    <div class="admin-item-info">
+                        <div class="admin-item-title">${song.title}</div>
+                        <div class="admin-item-artist">${song.artist}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteSong(${index})">ลบ</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+
+        // ==========================================
+        // 🎵 2. ระบบเล่นเพลง (Player)
+        // ==========================================
+        const audio = document.getElementById('audioPlayer');
+        const playlistEl = document.getElementById('playlist');
+        const playBtn = document.getElementById('playBtn');
+        const progressBar = document.getElementById('progressBar');
+        const volumeBar = document.getElementById('volumeBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const currentCover = document.getElementById('currentCover');
+        const currentTitle = document.getElementById('currentTitle');
+        const currentArtist = document.getElementById('currentArtist');
+
+        let currentSongIndex = 0;
+        let isPlaying = false;
+
+        function renderPlaylist() {
+            playlistEl.innerHTML = '';
+            songs.forEach((song, index) => {
+                const item = document.createElement('div');
+                item.className = `song-item ${index === currentSongIndex && isPlaying ? 'active' : ''}`;
+                item.onclick = () => playSong(index);
+                
+                item.innerHTML = `
+                    <img src="${song.cover}" class="song-img" alt="cover" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop'">
+                    <div class="song-info">
+                        <div class="song-title">${song.title}</div>
+                        <div class="song-artist">${song.artist}</div>
+                    </div>
+                    <div class="play-icon">${index === currentSongIndex && isPlaying ? '🎵' : '▶'}</div>
+                `;
+                playlistEl.appendChild(item);
+            });
+        }
+
+        function playSong(index) {
+            if (songs.length === 0) return;
+            currentSongIndex = index;
+            const song = songs[index];
+            
+            audio.src = song.url;
+            audio.play();
+            isPlaying = true;
+            
+            currentCover.src = song.cover;
+            currentTitle.textContent = song.title;
+            currentArtist.textContent = song.artist;
+            playBtn.textContent = '⏸';
+            
+            renderPlaylist();
+        }
+
+        function togglePlay() {
+            if (songs.length === 0) {
+                alert("ยังไม่มีเพลงในระบบ กรุณาเพิ่มเพลงก่อนครับ");
+                return;
+            }
+            if (!audio.src) {
+                playSong(0);
+                return;
+            }
+
+            if (isPlaying) {
+                audio.pause();
+                playBtn.textContent = '▶';
+            } else {
+                audio.play();
+                playBtn.textContent = '⏸';
+            }
+            isPlaying = !isPlaying;
+            renderPlaylist();
+        }
+
+        function nextSong() {
+            if (songs.length === 0) return;
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            playSong(currentSongIndex);
+        }
+
+        function prevSong() {
+            if (songs.length === 0) return;
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            playSong(currentSongIndex);
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.value = percent;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+            }
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('ended', () => {
+            nextSong();
+        });
+
+        progressBar.addEventListener('input', () => {
+            const seekTime = (progressBar.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+
+        volumeBar.addEventListener('input', () => {
+            audio.volume = volumeBar.value;
+        });
+        audio.volume = volumeBar.value;
+
+        // ==========================================
+        // 🚀 3. เริ่มต้นระบบ
+        // ==========================================
+        renderPlaylist();
+        renderAdminList();
+    </script>
 </body>
 </html>
