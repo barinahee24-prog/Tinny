@@ -2,473 +2,360 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Music Player — ฟังเพลงจาก YouTube</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Shorts Feed (API Version) 📡</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0e17;--panel:#151b2b;--card:#1a2236;--card-h:#222c44;--text:#f0f4ff;--muted:#8b96b0;--acc:#ff4d8d;--acc2:#7c5cff;--line:rgba(255,255,255,.08)}
-body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;background:radial-gradient(circle at 15% 0%,rgba(124,92,255,.2),transparent 40%),radial-gradient(circle at 85% 100%,rgba(255,77,141,.15),transparent 40%),var(--bg);color:var(--text);line-height:1.5;min-height:100vh;padding-bottom:100px}
-button,input{font:inherit}
-a{color:inherit;text-decoration:none}
-.container{width:min(1100px,calc(100% - 24px));margin:0 auto}
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff; overflow: hidden; }
 
-/* Header */
-header{position:sticky;top:0;z-index:30;backdrop-filter:blur(16px);background:rgba(10,14,23,.85);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
-.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
-.logo-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,var(--acc),var(--acc2));font-size:18px;box-shadow:0 8px 20px rgba(255,77,141,.3)}
+    .feed { height: 100dvh; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
+    .feed::-webkit-scrollbar { display: none; }
 
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:999px;padding:10px 18px;cursor:pointer;font-weight:700;font-size:14px;transition:.2s;white-space:nowrap}
-.btn-primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;box-shadow:0 8px 20px rgba(255,77,141,.25)}
-.btn-primary:hover{transform:translateY(-1px)}
-.btn-ghost{background:rgba(255,255,255,.06);border-color:var(--line);color:var(--text)}
-.btn-ghost:hover{background:rgba(255,255,255,.1)}
-.btn.sm{padding:7px 13px;font-size:13px}
+    .short-item { position: relative; height: 100dvh; width: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; justify-content: center; align-items: center; background: #000; }
+    .short-item iframe { width: 100%; height: 100%; max-width: calc(100dvh * 9 / 16); border: none; pointer-events: auto; }
 
-/* Hero */
-.hero{padding:48px 0 32px;text-align:center}
-.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.15;letter-spacing:-.8px;margin-bottom:12px}
-.grad{background:linear-gradient(135deg,#ff8ab8,#b7a6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p{color:var(--muted);max-width:540px;margin:0 auto 22px;font-size:15px}
-.hero-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .overlay { position: absolute; inset: 0; pointer-events: none; max-width: calc(100dvh * 9 / 16); margin: 0 auto; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%); }
+    .info { pointer-events: auto; max-width: 75%; margin-bottom: 10px; }
+    .channel { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ff0050, #ff9050); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; border: 2px solid #fff; }
+    .channel-name { font-weight: 600; font-size: 14px; }
+    .subscribe-btn { pointer-events: auto; background: #ff0050; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; margin-left: 8px; transition: transform 0.2s; }
+    .subscribe-btn:active { transform: scale(0.95); }
+    .subscribe-btn.subscribed { background: #333; }
+    .title { font-size: 14px; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* Controls */
-.controls{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.search{flex:1;min-width:220px;padding:12px 18px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);outline:none;font-size:14px}
-.search:focus{border-color:rgba(255,77,141,.6);box-shadow:0 0 0 3px rgba(255,77,141,.12)}
-.search::placeholder{color:var(--muted)}
+    .actions { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; pointer-events: auto; }
+    .action-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: #fff; cursor: pointer; font-size: 11px; transition: transform 0.2s; }
+    .action-btn:active { transform: scale(0.9); }
+    .action-icon { width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; font-size: 20px; transition: background 0.2s; }
+    .action-btn.liked .action-icon { background: #ff0050; }
+    .action-btn.liked .action-icon svg { fill: #fff; }
 
-/* Section title */
-.sec-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.sec-title h2{font-size:20px}
-.sec-title span{color:var(--muted);font-size:13px}
+    .top-bar { position: fixed; top: 0; left: 0; right: 0; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent); }
+    .top-bar h1 { font-size: 18px; font-weight: 700; background: linear-gradient(90deg, #ff0050, #ff9050); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .top-bar .counter { font-size: 12px; opacity: 0.7; pointer-events: auto; }
 
-/* Song grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;padding-bottom:40px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.2s;cursor:pointer;position:relative}
-.card:hover{background:var(--card-h);border-color:rgba(255,77,141,.4);transform:translateY(-3px);box-shadow:0 15px 30px rgba(0,0,0,.3)}
-.thumb{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.3s}
-.card:hover .thumb img{transform:scale(1.06)}
-.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6),transparent 55%);pointer-events:none}
-.play-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.95);display:grid;place-items:center;font-size:18px;opacity:0;transition:.2s;z-index:2;color:#111;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.card:hover .play-badge{opacity:1}
-.card.playing .play-badge{opacity:1;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
-.card.playing{border-color:var(--acc)}
-.card-body{padding:12px 14px}
-.card-body h3{font-size:14px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
-.card-body p{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .del{position:absolute;top:8px;right:8px;z-index:3;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-size:14px;opacity:0;transition:.2s;display:grid;place-items:center}
-.card:hover .del{opacity:1}
-.card .del:hover{background:rgba(255,92,92,.9)}
-.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);border:1px dashed var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+    .loading { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+    .loading.hidden { opacity: 0; pointer-events: none; }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #ff0050; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { margin-top: 16px; font-size: 14px; opacity: 0.7; text-align: center; padding: 0 20px; }
 
-/* Modal */
-.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:.2s}
-.modal.show{opacity:1;visibility:visible}
-.modal-box{width:min(880px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;max-height:92vh;display:flex;flex-direction:column;transform:scale(.96);transition:.2s}
-.modal.show .modal-box{transform:scale(1)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
-.modal-head h3{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.close{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;font-size:20px;line-height:1;display:grid;place-items:center;flex:0 0 auto}
-.close:hover{background:rgba(255,255,255,.12)}
-.video-wrap{position:relative;padding-top:56.25%;background:#000}
-.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .mute-indicator { position: fixed; top: 60px; right: 16px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 6px; z-index: 100; cursor: pointer; transition: opacity 0.3s; }
+    .mute-indicator:hover { opacity: 0.8; }
 
-/* Add form */
-.form{padding:16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
-.form label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted);font-weight:600}
-.form input{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 12px;outline:none;font-size:14px}
-.form input:focus{border-color:rgba(255,77,141,.6);box-shadow:0 0 0 3px rgba(255,77,141,.12)}
-.form-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:6px}
+    .error-banner { position: fixed; top: 110px; left: 16px; right: 16px; background: rgba(200, 0, 0, 0.9); color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; z-index: 1000; text-align: center; display: none; }
 
-/* Mini player */
-.mini{position:fixed;bottom:14px;left:14px;right:14px;z-index:90;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:none;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(0,0,0,.55);max-width:360px;backdrop-filter:blur(12px)}
-.mini.show{display:flex;animation:slideUp .3s}
-.mini img{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:0 0 auto}
-.mini .info{flex:1;min-width:0}
-.mini .title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mini .artist{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mini .mbtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:14px;flex:0 0 auto;transition:.2s}
-.mini .mbtn:hover{background:rgba(255,255,255,.12)}
-.mini .mbtn.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));border:0;color:#fff}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-#reopen{position:fixed;bottom:14px;left:14px;z-index:90;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;font-size:22px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;box-shadow:0 10px 30px rgba(255,77,141,.4);display:none;place-items:center}
-#reopen.show{display:grid}
-#reopen:hover{transform:scale(1.05)}
-#ytWrap{position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none}
-
-/* Toast */
-.toast-wrap{position:fixed;right:14px;bottom:14px;z-index:200;display:flex;flex-direction:column;gap:6px}
-.toast{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc);padding:10px 14px;border-radius:8px;font-size:13px;max-width:300px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:slideUp .25s}
-.toast.ok{border-left-color:#2ee6a6}
-.toast.err{border-left-color:#ff5c5c}
-
-/* Footer */
-footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
-
-@media(max-width:640px){
-  .hero{padding:32px 0 24px}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-  .mini{max-width:none;left:10px;right:10px;bottom:10px}
-  #reopen{left:10px;bottom:10px}
-  body{padding-bottom:90px}
-}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    @media (min-width: 768px) { .short-item { background: #0a0a0a; } .short-item iframe { border-radius: 16px; } .top-bar h1 { font-size: 22px; } }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="container nav">
-    <div class="logo"><div class="logo-icon">♪</div><span>Music Player</span></div>
-    <button id="addBtn" class="btn btn-primary sm">➕ เพิ่มเพลง</button>
-  </div>
-</header>
-
-<main class="container">
-  <section class="hero">
-    <h1>ฟังเพลงเพราะๆ<br><span class="grad">จาก YouTube</span></h1>
-    <p>คลิกเพลงที่ชอบ ฟังได้เลยในหน้านี้ — เพิ่มเพลงเองได้ด้วยลิงก์ YouTube</p>
-    <div class="hero-actions">
-      <button id="shuffleBtn" class="btn btn-primary">🔀 สุ่มเพลง</button>
-      <button id="addBtn2" class="btn btn-ghost">➕ เพิ่มเพลงใหม่</button>
-    </div>
-  </section>
-
-  <div class="controls">
-    <input id="searchInput" class="search" type="search" placeholder="🔎 ค้นหาชื่อเพลงหรือศิลปิน..." autocomplete="off">
-  </div>
-
-  <div class="sec-title">
-    <h2>เพลย์ลิสต์ของฉัน</h2>
-    <span id="count">—</span>
-  </div>
-
-  <div id="grid" class="grid"></div>
-</main>
-
-<footer>© 2026 Music Player — ฟังเพลงจาก YouTube ผ่าน embed ตามลิขสิทธิ์</footer>
-
-<!-- Play Modal -->
-<div id="playModal" class="modal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3 id="playTitle">กำลังเล่น...</h3>
-      <button class="close" id="closePlay">×</button>
-    </div>
-    <div class="video-wrap" id="videoWrap"></div>
-  </div>
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p id="loadingText">กำลังดึงข้อมูล Shorts จาก YouTube API...</p>
 </div>
 
-<!-- Add Modal -->
-<div id="addModal" class="modal">
-  <div class="modal-box" style="max-width:480px">
-    <div class="modal-head">
-      <h3>เพิ่มเพลงใหม่</h3>
-      <button class="close" id="closeAdd">×</button>
-    </div>
-    <form id="addForm" class="form">
-      <label>ลิงก์ YouTube หรือ Video ID
-        <input id="fUrl" required placeholder="https://youtu.be/... หรือ dQw4w9WgXcQ">
-      </label>
-      <label>ชื่อเพลง
-        <input id="fTitle" required placeholder="ชื่อเพลง">
-      </label>
-      <label>ศิลปิน / ช่อง (ไม่บังคับ)
-        <input id="fArtist" placeholder="ชื่อศิลปิน">
-      </label>
-      <div class="form-actions">
-        <button type="button" class="btn btn-ghost" id="cancelAdd">ยกเลิก</button>
-        <button type="submit" class="btn btn-primary">บันทึก</button>
-      </div>
-    </form>
-  </div>
+<div class="top-bar">
+    <h1>⚡ Shorts API Feed</h1>
+    <span class="counter" id="counter">0 / 0</span>
 </div>
 
-<!-- Mini Player -->
-<div id="mini" class="mini">
-  <img id="miniThumb" src="" alt="">
-  <div class="info">
-    <div class="title" id="miniTitle">—</div>
-    <div class="artist" id="miniArtist">—</div>
-  </div>
-  <button id="miniToggle" class="mbtn primary">⏸</button>
-  <button id="miniClose" class="mbtn">×</button>
+<div class="mute-indicator" id="muteIndicator" onclick="toggleMute()">
+    <span id="muteIcon">🔇</span>
+    <span id="muteText">ปิดเสียง</span>
 </div>
-<button id="reopen">♪</button>
 
-<div id="ytWrap"><div id="ytPlayer"></div></div>
-<div class="toast-wrap" id="toastWrap"></div>
+<div class="error-banner" id="errorBanner"></div>
+
+<div class="feed" id="feed"></div>
 
 <script>
-/* ===== Data ===== */
-const KEY = 'music-player-v1';
-const DEFAULTS = [
-  {id:'b-bIJZw0zGc', title:'เพลงแนะนำ', artist:'แก้ไขได้ที่ปุ่มเพิ่มเพลง'},
-  {id:'dQw4w9WgXcQ', title:'Never Gonna Give You Up', artist:'Rick Astley'},
-  {id:'kJQP7kiw5Fk', title:'Despacito', artist:'Luis Fonsi'},
-  {id:'JGwWNGJdvx8', title:'Shape of You', artist:'Ed Sheeran'},
-  {id:'OPf0YbXqDm0', title:'Uptown Funk', artist:'Bruno Mars'},
-  {id:'RgKAFK5djSk', title:'See You Again', artist:'Wiz Khalifa'}
-];
+// ============================================================
+// ⚙️ CONFIG — ใส่ค่าของคุณที่นี่
+// ============================================================
+const CONFIG = {
+    API_KEY: 'YOUR_YOUTUBE_DATA_API_KEY',   // ← ใส่ API Key ของคุณ
+    CHANNEL_ID: 'UCxxxxxxxxxxxxxxxx',       // ← ใส่ Channel ID ของคุณ
+    MAX_RESULTS: 20,                        // จำนวน Shorts สูงสุดที่ต้องการ
+    SEARCH_QUERY: ''                        // เว้นว่างไว้เพื่อดึงทั้งหมดของช่อง
+};
 
-let songs = load();
-let currentId = null;
-let ytPlayer = null;
-let ytReady = false;
-let pendingPlay = false;
+// ============================================================
+// 🎬 MAIN FLOW
+// ============================================================
+const feedEl = document.getElementById('feed');
+const counterEl = document.getElementById('counter');
+const loadingEl = document.getElementById('loading');
+const loadingText = document.getElementById('loadingText');
+const errorBanner = document.getElementById('errorBanner');
 
-function load(){
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const p = JSON.parse(raw);
-      if (Array.isArray(p) && p.length) return p;
-    }
-  } catch(e){}
-  return DEFAULTS.slice();
-}
-function save(){ localStorage.setItem(KEY, JSON.stringify(songs)); }
+let currentIndex = 0;
+let isMuted = true;
+let shortsData = [];
 
-/* ===== Helpers ===== */
-const $ = s => document.querySelector(s);
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-function extractId(input){
-  if (!input) return '';
-  const s = input.trim();
-  if (/^[\w-]{11}$/.test(s)) return s;
-  const m = s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);
-  return m ? m[1] : s;
-}
-function thumb(id){ return `https://img.youtube.com/vi/${id}/hqdefault.jpg`; }
-function toast(msg, type=''){
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.textContent = msg;
-  $('#toastWrap').appendChild(el);
-  setTimeout(() => {
-    el.style.transition = 'opacity .3s';
-    el.style.opacity = '0';
-    setTimeout(() => el.remove(), 320);
-  }, 2400);
-}
-
-/* ===== Render ===== */
-function render(){
-  const q = $('#searchInput').value.trim().toLowerCase();
-  const list = songs.filter(s =>
-    !q || (s.title + ' ' + (s.artist||'')).toLowerCase().includes(q)
-  );
-  const grid = $('#grid');
-  if (!list.length){
-    grid.innerHTML = '<div class="empty"><h3>ไม่พบเพลง</h3><p>ลองค้นหาคำอื่น หรือกด "เพิ่มเพลง" ด้านบน</p></div>';
-    $('#count').textContent = '0 เพลง';
-    return;
-  }
-  grid.innerHTML = list.map(s => `
-    <div class="card${s.id === currentId ? ' playing' : ''}" data-id="${s.id}">
-      <button class="del" data-del="${s.id}" title="ลบ">×</button>
-      <div class="thumb">
-        <img src="${thumb(s.id)}" alt="" loading="lazy">
-        <div class="play-badge">${s.id === currentId ? '⏸' : '▶'}</div>
-      </div>
-      <div class="card-body">
-        <h3>${esc(s.title)}</h3>
-        <p>${esc(s.artist || '—')}</p>
-      </div>
-    </div>
-  `).join('');
-  $('#count').textContent = `${list.length} เพลง`;
-}
-
-/* ===== Play song ===== */
-function playSong(id){
-  const song = songs.find(s => s.id === id);
-  if (!song) return;
-  currentId = id;
-  render();
-  showMini(song);
-  loadYT(() => {
-    if (!ytPlayer) return;
-    if (ytReady){
-      ytPlayer.loadVideoById(id);
-    } else {
-      pendingPlay = true;
-    }
-  });
-}
-
-/* ===== YouTube IFrame ===== */
-function loadYT(cb){
-  if (window.YT && window.YT.Player){
-    if (!ytPlayer) initYT();
-    cb && cb();
-    return;
-  }
-  // load api
-  if (!document.querySelector('script[src*="iframe_api"]')){
-    const s = document.createElement('script');
-    s.src = 'https://www.youtube.com/iframe_api';
-    document.body.appendChild(s);
-  }
-  window.onYouTubeIframeAPIReady = () => {
-    initYT();
-    cb && cb();
-  };
-}
-
-function initYT(){
-  if (ytPlayer) return;
-  const vars = { autoplay: 0, controls: 0, playsinline: 1, rel: 0 };
-  if (location.protocol === 'http:' || location.protocol === 'https:'){
-    vars.origin = location.origin;
-  }
-  ytPlayer = new YT.Player('ytPlayer', {
-    height: '200', width: '200',
-    videoId: currentId || DEFAULTS[0].id,
-    playerVars: vars,
-    events: {
-      onReady: () => {
-        ytReady = true;
-        if (pendingPlay && currentId){
-          ytPlayer.loadVideoById(currentId);
-          pendingPlay = false;
+async function init() {
+    try {
+        if (CONFIG.API_KEY === 'YOUR_YOUTUBE_DATA_API_KEY') {
+            throw new Error('กรุณาใส่ API_KEY ของคุณในส่วน CONFIG');
         }
-      },
-      onStateChange: (e) => {
-        const playing = e.data === 1;
-        updateMiniBtn(playing);
-        if (e.data === 0){
-          // ended → next
-          playNext();
+        if (CONFIG.CHANNEL_ID === 'UCxxxxxxxxxxxxxxxx') {
+            throw new Error('กรุณาใส่ CHANNEL_ID ของคุณในส่วน CONFIG');
         }
-      },
-      onError: () => {
-        toast('เพลงนี้ไม่ให้เล่นในเว็บ — ลองเพลงอื่น', 'err');
-        ytReady = false;
-      }
+
+        loadingText.textContent = 'กำลังค้นหาวิดีโอ...';
+        shortsData = await fetchShorts();
+
+        if (shortsData.length === 0) {
+            throw new Error('ไม่พบ Shorts ในช่องนี้ (อาจเป็นเพราะคลิปทั้งหมดยาวเกิน 60 วินาที หรือช่องยังไม่มี Shorts)');
+        }
+
+        loadingText.textContent = `พบ ${shortsData.length} Shorts กำลังสร้างฟีด...`;
+        buildFeed(shortsData);
+        startObserving();
+
+    } catch (err) {
+        console.error(err);
+        loadingText.textContent = 'เกิดข้อผิดพลาด';
+        errorBanner.style.display = 'block';
+        errorBanner.textContent = '❌ ' + err.message;
+        loadingEl.classList.add('hidden');
+        setTimeout(() => loadingEl.style.display = 'none', 500);
     }
-  });
 }
 
-function playNext(){
-  const idx = songs.findIndex(s => s.id === currentId);
-  if (idx < 0 || songs.length < 2) return;
-  const next = songs[(idx + 1) % songs.length];
-  playSong(next.id);
-}
+// ============================================================
+// 📡 YOUTUBE DATA API — ดึงและกรอง Shorts
+// ============================================================
+async function fetchShorts() {
+    // 1. ค้นหาวิดีโอในช่อง (videoDuration=short = < 4 นาที)
+    //    ใช้ videoDimension=2d เพื่อตัดวิดีโอ 3D ออก
+    const searchParams = new URLSearchParams({
+        key: CONFIG.API_KEY,
+        channelId: CONFIG.CHANNEL_ID,
+        part: 'snippet',
+        type: 'video',
+        order: 'date',
+        videoDuration: 'short',
+        videoDimension: '2d',
+        maxResults: Math.min(CONFIG.MAX_RESULTS, 50).toString()
+    });
 
-/* ===== Mini player ===== */
-function showMini(song){
-  $('#mini').classList.add('show');
-  $('#reopen').classList.remove('show');
-  $('#miniThumb').src = thumb(song.id);
-  $('#miniTitle').textContent = song.title;
-  $('#miniArtist').textContent = song.artist || '—';
-}
-function updateMiniBtn(playing){
-  $('#miniToggle').textContent = playing ? '⏸' : '▶';
-}
-function hideMini(){
-  $('#mini').classList.remove('show');
-  $('#reopen').classList.add('show');
-}
-
-/* ===== Modals ===== */
-function openPlayModal(id){
-  const s = songs.find(x => x.id === id) || {title:'YouTube', artist:''};
-  $('#playTitle').textContent = s.title + (s.artist ? ' — ' + s.artist : '');
-  $('#videoWrap').innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
-  $('#playModal').classList.add('show');
-  // หยุด mini player
-  if (ytPlayer && ytReady){
-    try { ytPlayer.pauseVideo(); } catch(e){}
-  }
-}
-function closePlayModal(){
-  $('#playModal').classList.remove('show');
-  $('#videoWrap').innerHTML = '';
-}
-function openAddModal(){
-  $('#fUrl').value = '';
-  $('#fTitle').value = '';
-  $('#fArtist').value = '';
-  $('#addModal').classList.add('show');
-  setTimeout(() => $('#fUrl').focus(), 100);
-}
-function closeAddModal(){
-  $('#addModal').classList.remove('show');
-}
-
-/* ===== Events ===== */
-$('#searchInput').addEventListener('input', render);
-$('#addBtn').addEventListener('click', openAddModal);
-$('#addBtn2').addEventListener('click', openAddModal);
-$('#shuffleBtn').addEventListener('click', () => {
-  if (!songs.length){ toast('ยังไม่มีเพลง', 'err'); return; }
-  const pick = songs[Math.floor(Math.random() * songs.length)];
-  playSong(pick.id);
-});
-$('#closePlay').addEventListener('click', closePlayModal);
-$('#playModal').addEventListener('click', e => { if (e.target.id === 'playModal') closePlayModal(); });
-$('#closeAdd').addEventListener('click', closeAddModal);
-$('#cancelAdd').addEventListener('click', closeAddModal);
-$('#addModal').addEventListener('click', e => { if (e.target.id === 'addModal') closeAddModal(); });
-
-$('#addForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const id = extractId($('#fUrl').value);
-  const title = $('#fTitle').value.trim();
-  const artist = $('#fArtist').value.trim();
-  if (!id || id.length !== 11){ toast('Video ID ไม่ถูกต้อง', 'err'); return; }
-  if (!title){ toast('กรอกชื่อเพลง', 'err'); return; }
-  if (songs.some(s => s.id === id)){ toast('มีเพลงนี้อยู่แล้ว', 'err'); return; }
-  songs.unshift({ id, title, artist });
-  save();
-  render();
-  closeAddModal();
-  toast('เพิ่มเพลงแล้ว ✓', 'ok');
-});
-
-$('#grid').addEventListener('click', e => {
-  const delBtn = e.target.closest('[data-del]');
-  if (delBtn){
-    e.stopPropagation();
-    const id = delBtn.dataset.del;
-    if (confirm('ลบเพลงนี้ออกจากเพลย์ลิสต์?')){
-      songs = songs.filter(s => s.id !== id);
-      save();
-      if (currentId === id){
-        currentId = null;
-        hideMini();
-        if (ytPlayer && ytReady){ try { ytPlayer.stopVideo(); } catch(e){} }
-      }
-      render();
-      toast('ลบเพลงแล้ว', 'ok');
+    if (CONFIG.SEARCH_QUERY) {
+        searchParams.set('q', CONFIG.SEARCH_QUERY);
     }
-    return;
-  }
-  const card = e.target.closest('[data-id]');
-  if (card){
-    playSong(card.dataset.id);
-  }
+
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?${searchParams}`;
+    const searchRes = await fetch(searchUrl);
+
+    if (!searchRes.ok) {
+        const err = await searchRes.json();
+        throw new Error(getApiErrorMessage(err));
+    }
+
+    const searchData = await searchRes.json();
+    if (!searchData.items || searchData.items.length === 0) {
+        return [];
+    }
+
+    const videoIds = searchData.items.map(item => item.id.videoId).join(',');
+
+    // 2. ดึงรายละเอียดเพื่อตรวจสอบความยาวจริง (ต้อง ≤ 60 วินาที)
+    const detailsParams = new URLSearchParams({
+        key: CONFIG.API_KEY,
+        id: videoIds,
+        part: 'contentDetails,snippet,statistics'
+    });
+
+    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?${detailsParams}`;
+    const detailsRes = await fetch(detailsUrl);
+
+    if (!detailsRes.ok) {
+        const err = await detailsRes.json();
+        throw new Error(getApiErrorMessage(err));
+    }
+
+    const detailsData = await detailsRes.json();
+
+    // 3. กรองเฉพาะ Shorts (ความยาว ≤ 60 วินาที)
+    const shorts = detailsData.items.filter(item => {
+        const durationSec = parseISODuration(item.contentDetails.duration);
+        return durationSec > 0 && durationSec <= 60;
+    }).map(item => ({
+        videoId: item.id,
+        channel: item.snippet.channelTitle,
+        avatar: item.snippet.channelTitle.charAt(0).toUpperCase(),
+        title: item.snippet.title,
+        likes: parseInt(item.statistics?.likeCount || 0),
+        viewCount: parseInt(item.statistics?.viewCount || 0)
+    }));
+
+    return shorts;
+}
+
+function parseISODuration(iso) {
+    // แปลง PT1M30S → 90 วินาที
+    const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return 0;
+    const h = parseInt(match[1] || 0);
+    const m = parseInt(match[2] || 0);
+    const s = parseInt(match[3] || 0);
+    return h * 3600 + m * 60 + s;
+}
+
+function getApiErrorMessage(err) {
+    const reason = err?.error?.errors?.[0]?.reason;
+    const map = {
+        'quotaExceeded': 'โควต้า API หมดแล้ว (search.list มีขีดจำกัด 100 ครั้ง/วัน)',
+        'keyInvalid': 'API Key ไม่ถูกต้อง',
+        'channelNotFound': 'ไม่พบช่องที่ระบุ',
+        'forbidden': 'การเข้าถึงถูกปฏิเสธ (อาจต้องเปิดใช้ YouTube Data API v3 ใน Cloud Console)'
+    };
+    return map[reason] || err?.error?.message || 'เกิดข้อผิดพลาดในการเรียก API';
+}
+
+// ============================================================
+// 🎬 BUILD FEED (เหมือนเวอร์ชันก่อนหน้า)
+// ============================================================
+function buildFeed(data) {
+    feedEl.innerHTML = '';
+    data.forEach((short, index) => {
+        const item = document.createElement('div');
+        item.className = 'short-item';
+        item.dataset.index = index;
+        item.dataset.videoId = short.videoId;
+
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${short.videoId}?` + new URLSearchParams({
+            autoplay: 1, mute: 1, controls: 1, rel: 0, modestbranding: 1,
+            playsinline: 1, loop: 1, playlist: short.videoId, enablejsapi: 1,
+            origin: window.location.origin
+        }).toString();
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.loading = 'lazy';
+        iframe.title = short.title;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.innerHTML = `
+            <div class="info">
+                <div class="channel">
+                    <div class="avatar">${short.avatar}</div>
+                    <span class="channel-name">@${short.channel.toLowerCase().replace(/\s+/g, '')}</span>
+                    <button class="subscribe-btn" onclick="event.stopPropagation(); this.classList.toggle('subscribed'); this.textContent = this.classList.contains('subscribed') ? 'ติดตามแล้ว' : 'ติดตาม';">ติดตาม</button>
+                </div>
+                <div class="title">${escapeHtml(short.title)}</div>
+            </div>
+            <div class="actions">
+                <button class="action-btn like-btn" onclick="event.stopPropagation(); toggleLike(this);">
+                    <div class="action-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                    </div>
+                    <span class="like-count">${formatNumber(short.likes)}</span>
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation();">
+                    <div class="action-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <span>ความคิดเห็น</span>
+                </button>
+                <button class="action-btn" onclick="event.stopPropagation(); shareShort('${short.videoId}');">
+                    <div class="action-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                    </div>
+                    <span>แชร์</span>
+                </button>
+            </div>
+        `;
+
+        item.appendChild(iframe);
+        item.appendChild(overlay);
+        feedEl.appendChild(item);
+    });
+    counterEl.textContent = `1 / ${data.length}`;
+}
+
+// ============================================================
+// 🎯 OBSERVER / UTILITIES (เหมือนเวอร์ชันก่อนหน้า)
+// ============================================================
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        const iframe = entry.target.querySelector('iframe');
+        if (!iframe || !iframe.contentWindow) return;
+        const index = parseInt(entry.target.dataset.index);
+        const command = entry.isIntersecting ? 'playVideo' : 'pauseVideo';
+        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: command, args: [] }), '*');
+        if (entry.isIntersecting) { currentIndex = index; updateCounter(); }
+    });
+}, { threshold: 0.6, root: feedEl });
+
+function startObserving() {
+    document.querySelectorAll('.short-item').forEach(item => observer.observe(item));
+    loadingEl.classList.add('hidden');
+    setTimeout(() => loadingEl.style.display = 'none', 500);
+}
+
+function updateCounter() { counterEl.textContent = `${currentIndex + 1} / ${shortsData.length}`; }
+function formatNumber(num) { if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M'; if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K'; return num.toString(); }
+function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+function toggleLike(btn) {
+    btn.classList.toggle('liked');
+    const svg = btn.querySelector('svg');
+    svg.setAttribute('fill', btn.classList.contains('liked') ? 'currentColor' : 'none');
+}
+
+function toggleMute() {
+    isMuted = !isMuted;
+    document.getElementById('muteIcon').textContent = isMuted ? '🔇' : '🔊';
+    document.getElementById('muteText').textContent = isMuted ? 'ปิดเสียง' : 'เปิดเสียง';
+    document.querySelectorAll('.short-item iframe').forEach(iframe => {
+        if (!iframe.contentWindow) return;
+        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: isMuted ? 'mute' : 'unMute', args: [] }), '*');
+    });
+}
+
+function shareShort(videoId) {
+    const url = `https://youtube.com/shorts/${videoId}`;
+    if (navigator.share) { navigator.share({ title: 'ดู Shorts นี้สิ!', url }).catch(() => {}); }
+    else { navigator.clipboard.writeText(url).then(() => showToast('คัดลอกลิงก์แล้ว!')); }
+}
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:1000;animation:fadeInUp 0.3s ease;';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const items = document.querySelectorAll('.short-item');
+        const targetIndex = e.key === 'ArrowDown' ? Math.min(currentIndex + 1, items.length - 1) : Math.max(currentIndex - 1, 0);
+        items[targetIndex]?.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (e.key === 'm' || e.key === 'M') toggleMute();
 });
 
-$('#miniToggle').addEventListener('click', () => {
-  if (!ytPlayer || !ytReady) return;
-  try {
-    const st = ytPlayer.getPlayerState();
-    if (st === 1) ytPlayer.pauseVideo();
-    else ytPlayer.playVideo();
-  } catch(e){}
-});
-$('#miniClose').addEventListener('click', () => {
-  if (ytPlayer && ytReady){
-    try { ytPlayer.pauseVideo(); } catch(e){}
-  }
-  hideMini();
-});
-$('#reopen').addEventListener('click', () => {
-  $('#mini').classLi
+// ============================================================
+// 🚀 START
+// ============================================================
+init();
+</script>
+
+<style>
+@keyframes fadeInUp { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+</style>
+
+</body>
+</html>
