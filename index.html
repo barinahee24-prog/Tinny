@@ -151,48 +151,49 @@
 
     <!-- View 1: Player (หน้าฟังเพลง) -->
     <div class="view active" id="playerView">
-        <div class="playlist-container" id="playlist">
-            <!-- รายการเพลงจะถูกสร้างที่นี่ -->
+            <div class="playlist-container" id="playlist">
+        <!-- รายการเพลงจะถูกสร้างที่นี่ -->
+    </div>
+</div>
+
+<!-- View 2: Admin (หลังบ้าน) -->
+<div class="view" id="adminView">
+    <div class="admin-container">
+        <h2 class="admin-title">⚙️ จัดการรายการเพลง</h2>
+        
+        <!-- ฟอร์มเพิ่มเพลง -->
+        <div class="form-group">
+            <label>ชื่อเพลง</label>
+            <input type="text" id="addTitle" placeholder="เช่น เพลงรักในฤดูร้อน">
+        </div>
+        <div class="form-group">
+            <label>ชื่อศิลปิน</label>
+            <input type="text" id="addArtist" placeholder="เช่น ศิลปิน A">
+        </div>
+        <div class="form-group">
+            <label>ลิงก์รูปหน้าปก (URL)</label>
+            <input type="text" id="addCover" placeholder="https://example.com/image.jpg">
+        </div>
+        <div class="form-group">
+            <label>ลิงก์ไฟล์เสียง MP3 (URL)</label>
+            <input type="text" id="addUrl" placeholder="https://example.com/song.mp3">
+        </div>
+        <button class="btn-submit" onclick="addNewSong()">➕ เพิ่มเพลง</button>
+
+        <!-- ลิสต์เพลงปัจจุบัน -->
+        <div class="admin-list">
+            <h3 style="margin-bottom: 15px; font-size: 16px;">เพลงทั้งหมด</h3>
+            <div id="adminSongList"></div>
         </div>
     </div>
+</div>
 
-    <!-- View 2: Admin (หลังบ้าน) -->
-    <div class="view" id="adminView">
-        <div class="admin-container">
-            <h2 class="admin-title">⚙️ จัดการรายการเพลง</h2>
-            
-            <!-- ฟอร์มเพิ่มเพลง -->
-            <div class="form-group">
-                <label>ชื่อเพลง</label>
-                <input type="text" id="addTitle" placeholder="เช่น เพลงรักในฤดูร้อน">
-            </div>
-            <div class="form-group">
-                <label>ชื่อศิลปิน</label>
-                <input type="text" id="addArtist" placeholder="เช่น ศิลปิน A">
-            </div>
-            <div class="form-group">
-                <label>ลิงก์รูปหน้าปก (URL)</label>
-                <input type="text" id="addCover" placeholder="https://example.com/image.jpg">
-            </div>
-            <div class="form-group">
-                <label>ลิงก์ไฟล์เสียง MP3 (URL)</label>
-                <input type="text" id="addUrl" placeholder="https://example.com/song.mp3">
-            </div>
-            <button class="btn-submit" onclick="addNewSong()">➕ เพิ่มเพลง</button>
-
-            <!-- ลิสต์เพลงปัจจุบัน -->
-            <div class="admin-list">
-                <h3 style="margin-bottom: 15px; font-size: 16px;">เพลงทั้งหมด</h3>
-                <div id="adminSongList"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom Player Bar -->
-    <div class="player-bar">
-        <div class="progress-container">
-            <span id="currentTime">0:00</span>
-            <input type="range" id="progressBar" value="0" min="0" max="100">
+<!-- Bottom Player Bar -->
+<div class="player-bar">
+    <div class="progress-container">
+        <span id="currentTime">0:00</span>
+        <input type="range" id="progressBar" value="0" min="0" max="100">
+        <span id="duration">0:00</span>
             <span id="duration">0:00</span>
         </div>
 
@@ -220,11 +221,27 @@
 
     <audio id="audioPlayer"></audio>
 
+             durationEl.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('ended', () => {
+            nextSong();
+        });
+
+        progressBar.addEventListener
+    ('               if (!title || !url)
     <script>
         // ==========================================
         // 🔐 1. ระบบหลังบ้าน & LocalStorage
         // ==========================================
         const ADMIN_PASSWORD = "311235"; // รหัสผ่านเข้าหลังบ้าน
+        // ข้อมูลเชื่อมต่อ JSONBin
+        const BIN_ID = '6af47a3effd5d16053b98a6d';
+        const API_KEY = '$2a$10$.wOZrqJLA7xLGjhVpgzMX.YA5K25WIrTopILtnVif/zaJ6XOvQQIy';
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+// เปลี่ยน Array เพลงเริ่มต้น (ถ้าไม่มีในฐานข้อมูลให้ใช้ค่าว่าง)
+let songs = []; 
         let isAdminLoggedIn = false;
         
         // เพลงเริ่มต้น (ถ้าในเครื่องยังไม่เคยมีข้อมูล)
@@ -290,7 +307,7 @@
             const cover = document.getElementById('addCover').value.trim() || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop';
             const url = document.getElementById('addUrl').value.trim();
 
-            if (!title || !url) {
+ {
                 alert("⚠️ กรุณากรอกชื่อเพลงและลิงก์ไฟล์ MP3");
                 return;
             }
@@ -356,122 +373,265 @@
         const playBtn = document.getElementById('playBtn');
         const progressBar = document.getElementById('progressBar');
         const volumeBar = document.getElementById('volumeBar');
-        const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
-        const currentCover = document.getElementById('currentCover');
-        const currentTitle = document.getElementById('currentTitle');
-        const currentArtist = document.getElementById('currentArtist');
+<script>
+    // ==========================================
+    // 🔐 1. ระบบหลังบ้าน & Cloud Database (JSONBin)
+    // ==========================================
+    const ADMIN_PASSWORD = "311235";
+    
+    // ข้อมูลเชื่อมต่อ JSONBin (ที่คุณใส่ไว้แล้ว)
+    const BIN_ID = '6af47a3effd5d16053b98a6d'; 
+    const API_KEY = '$2a$10$wO2rqJLA7xLGjHVpgzMX.YA5K25WIrTopILtnVif/zaJ6X0vQQiy'; 
+    const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-        let currentSongIndex = 0;
-        let isPlaying = false;
+    let isAdminLoggedIn = false;
+    let songs = []; // เริ่มต้นเป็นค่าว่าง รอโหลดจากคลาวด์
+    let currentSongIndex = 0;
+    let isPlaying = false;
 
-        function renderPlaylist() {
-            playlistEl.innerHTML = '';
-            songs.forEach((song, index) => {
-                const item = document.createElement('div');
-                item.className = `song-item ${index === currentSongIndex && isPlaying ? 'active' : ''}`;
-                item.onclick = () => playSong(index);
-                
-                item.innerHTML = `
-                    <img src="${song.cover}" class="song-img" alt="cover" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop'">
-                    <div class="song-info">
-                        <div class="song-title">${song.title}</div>
-                        <div class="song-artist">${song.artist}</div>
-                    </div>
-                    <div class="play-icon">${index === currentSongIndex && isPlaying ? '🎵' : '▶'}</div>
-                `;
-                playlistEl.appendChild(item);
+    // ฟังก์ชันดึงข้อมูลจาก Cloud
+    async function loadFromCloud() {
+        try {
+            const response = await fetch(JSONBIN_URL + '/latest', {
+                headers: { 'X-Master-Key': API_KEY }
             });
-        }
-
-        function playSong(index) {
-            if (songs.length === 0) return;
-            currentSongIndex = index;
-            const song = songs[index];
-            
-            audio.src = song.url;
-            audio.play();
-            isPlaying = true;
-            
-            currentCover.src = song.cover;
-            currentTitle.textContent = song.title;
-            currentArtist.textContent = song.artist;
-            playBtn.textContent = '⏸';
-            
+            const data = await response.json();
+            songs = data.record.songs || []; 
             renderPlaylist();
+            renderAdminList();
+        } catch (error) {
+            console.error("โหลดข้อมูลไม่ได้", error);
+            alert("❌ โหลดข้อมูลเพลงไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต");
+        }
+    }
+
+    // ฟังก์ชันบันทึกข้อมูลขึ้น Cloud
+    async function saveToCloud() {
+        try {
+            await fetch(JSONBIN_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify({ songs: songs })
+            });
+            renderAdminList(); 
+            renderPlaylist();
+        } catch (error) {
+            alert("❌ บันทึกข้อมูลไม่สำเร็จ");
+        }
+    }
+
+    // สลับหน้าจอ Player <-> Admin
+    function toggleView() {
+        const playerView = document.getElementById('playerView');
+        const adminView = document.getElementById('adminView');
+        const navBtn = document.getElementById('navToggleBtn');
+
+        if (adminView.classList.contains('active')) {
+            adminView.classList.remove('active');
+            playerView.classList.add('active');
+            navBtn.textContent = '⚙️ จัดการเพลง';
+        } else {
+            if (!isAdminLoggedIn) {
+                const pass = prompt("🔒 กรุณาใส่รหัสผ่าน:");
+                if (pass === ADMIN_PASSWORD) {
+                    isAdminLoggedIn = true;
+                } else if (pass !== null) {
+                    alert("❌ รหัสผ่านไม่ถูกต้อง!");
+                    return;
+                } else {
+                    return; 
+                }
+            }
+            playerView.classList.remove('active');
+            adminView.classList.add('active');
+            navBtn.textContent = '🎵 กลับไปหน้าฟังเพลง';
+            renderAdminList();
+        }
+    }
+
+    // เพิ่มเพลงใหม่ (บันทึกลง Cloud)
+    function addNewSong() {
+        const title = document.getElementById('addTitle').value.trim();
+        const artist = document.getElementById('addArtist').value.trim();
+        const cover = document.getElementById('addCover').value.trim() || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop';
+        const url = document.getElementById('addUrl').value.trim();
+
+        if (!title || !url) {
+            alert("⚠️ กรุณากรอกชื่อเพลงและลิงก์ MP3");
+            return;
         }
 
-        function togglePlay() {
-            if (songs.length === 0) {
-                alert("ยังไม่มีเพลงในระบบ กรุณาเพิ่มเพลงก่อนครับ");
-                return;
-            }
-            if (!audio.src) {
-                playSong(0);
-                return;
-            }
+        songs.push({ title, artist: artist || 'Unknown Artist', cover, url });
+        saveToCloud(); // เซฟลงคลาวด์
+        
+        document.getElementById('addTitle').value = '';
+        document.getElementById('addArtist').value = '';
+        document.getElementById('addCover').value = '';
+        document.getElementById('addUrl').value = '';
+        
+        alert("✅ เพิ่มเพลงสำเร็จ!");
+    }
 
-            if (isPlaying) {
+    // ลบเพลง (บันทึกลง Cloud)
+    function deleteSong(index) {
+        if (confirm(`ลบเพลง "${songs[index].title}" ใช่หรือไม่?`)) {
+            songs.splice(index, 1);
+            saveToCloud(); // เซฟลงคลาวด์
+            
+            if (currentSongIndex === index) {
+                const audio = document.getElementById('audioPlayer');
                 audio.pause();
-                playBtn.textContent = '▶';
-            } else {
-                audio.play();
-                playBtn.textContent = '⏸';
+                isPlaying = false;
+                document.getElementById('playBtn').textContent = '▶';
+                document.getElementById('currentTitle').textContent = 'เลือกเพลงเพื่อเล่น';
+                document.getElementById('currentArtist').textContent = '-';
             }
-            isPlaying = !isPlaying;
-            renderPlaylist();
         }
+    }
 
-        function nextSong() {
-            if (songs.length === 0) return;
-            currentSongIndex = (currentSongIndex + 1) % songs.length;
-            playSong(currentSongIndex);
-        }
-
-        function prevSong() {
-            if (songs.length === 0) return;
-            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-            playSong(currentSongIndex);
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "0:00";
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
-
-        audio.addEventListener('timeupdate', () => {
-            if (audio.duration) {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                progressBar.value = percent;
-                currentTimeEl.textContent = formatTime(audio.currentTime);
-            }
+    // แสดงรายการเพลงในหลังบ้าน
+    function renderAdminList() {
+        const list = document.getElementById('adminSongList');
+        list.innerHTML = '';
+        songs.forEach((song, index) => {
+            const div = document.createElement('div');
+            div.className = 'admin-item';
+            div.innerHTML = `
+                <div class="admin-item-info">
+                    <div class="admin-item-title">${song.title}</div>
+                    <div class="admin-item-artist">${song.artist}</div>
+                </div>
+                <button class="btn-delete" onclick="deleteSong(${index})">ลบ</button>
+            `;
+            list.appendChild(div);
         });
+    }
 
-        audio.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(audio.duration);
+    // ==========================================
+    // 🎵 2. ระบบเล่นเพลง (Player)
+    // ==========================================
+    const audio = document.getElementById('audioPlayer');
+    const playlistEl = document.getElementById('playlist');
+    const playBtn = document.getElementById('playBtn');
+    const progressBar = document.getElementById('progressBar');
+    const volumeBar = document.getElementById('volumeBar');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+    const currentCover = document.getElementById('currentCover');
+    const currentTitle = document.getElementById('currentTitle');
+    const currentArtist = document.getElementById('currentArtist');
+
+    function renderPlaylist() {
+        playlistEl.innerHTML = '';
+        songs.forEach((song, index) => {
+            const item = document.createElement('div');
+            item.className = `song-item ${index === currentSongIndex && isPlaying ? 'active' : ''}`;
+            item.onclick = () => playSong(index);
+            
+            item.innerHTML = `
+                <img src="${song.cover}" class="song-img" alt="cover" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop'">
+                <div class="song-info">
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-artist">${song.artist}</div>
+                </div>
+                <div class="play-icon">${index === currentSongIndex && isPlaying ? '🎵' : '▶'}</div>
+            `;
+            playlistEl.appendChild(item);
         });
+    }
 
-        audio.addEventListener('ended', () => {
-            nextSong();
-        });
-
-        progressBar.addEventListener('input', () => {
-            const seekTime = (progressBar.value / 100) * audio.duration;
-            audio.currentTime = seekTime;
-        });
-
-        volumeBar.addEventListener('input', () => {
-            audio.volume = volumeBar.value;
-        });
-        audio.volume = volumeBar.value;
-
-        // ==========================================
-        // 🚀 3. เริ่มต้นระบบ
-        // ==========================================
+    function playSong(index) {
+        if (songs.length === 0) return;
+        currentSongIndex = index;
+        const song = songs[index];
+        
+        audio.src = song.url;
+        audio.play().catch(e => alert("ไม่สามารถเล่นไฟล์นี้ได้ กรุณาตรวจสอบลิงก์ MP3"));
+        isPlaying = true;
+        
+        currentCover.src = song.cover;
+        currentTitle.textContent = song.title;
+        currentArtist.textContent = song.artist;
+        playBtn.textContent = '⏸';
+        
         renderPlaylist();
-        renderAdminList();
-    </script>
+    }
+
+    function togglePlay() {
+        if (songs.length === 0) {
+            alert("ยังไม่มีเพลงในระบบ");
+            return;
+        }
+        if (!audio.src) {
+            playSong(0);
+            return;
+        }
+
+        if (isPlaying) {
+            audio.pause();
+            playBtn.textContent = '▶';
+        } else {
+            audio.play();
+            playBtn.textContent = '⏸';
+        }
+        isPlaying = !isPlaying;
+        renderPlaylist();
+    }
+
+    function nextSong() {
+        if (songs.length === 0) return;
+        currentSongIndex = (currentSongIndex + 1) % songs.length;
+        playSong(currentSongIndex);
+    }
+
+    function prevSong() {
+        if (songs.length === 0) return;
+        currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+        playSong(currentSongIndex);
+    }
+
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return "0:00";
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.value = percent;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+        nextSong();
+    });
+
+    progressBar.addEventListener('input', () => {
+        const seekTime = (progressBar.value / 100) * audio.duration;
+        audio.currentTime = seekTime;
+    });
+
+    volumeBar.addEventListener('input', () => {
+        audio.volume = volumeBar.value;
+    });
+    audio.volume = volumeBar.value;
+
+    // ==========================================
+    // 🚀 3. เริ่มต้นระบบ
+    // ==========================================
+    // สั่งให้โหลดข้อมูลจาก Cloud ทันทีที่เปิดเว็บ
+    loadFromCloud();
+
+</script>
 </body>
 </html>
